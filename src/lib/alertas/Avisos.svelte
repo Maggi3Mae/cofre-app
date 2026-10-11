@@ -9,7 +9,7 @@
     e.startsWith("/inversiones") ? "Ver inversiones" : e === "/ajustes" ? "Ir a Ajustes" : "Ver presupuestos";
 </script>
 
-<div class="pila" class:movil={pantalla.celular} role="region" aria-label="Avisos" aria-live="polite">
+<div class="cf pila" class:movil={pantalla.celular} role="region" aria-label="Avisos" aria-live="polite">
   {#each avisos.lista as a (a.id)}
     <div class="aviso cf-glass nivel-{claseNivel[a.nivel]}" role="status">
       <span class="icono"><Icono nombre="campana" /></span>
