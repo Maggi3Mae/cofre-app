@@ -1,11 +1,13 @@
 // Diseño del celular: Android con pantalla angosta (la tablet sigue con el de escritorio).
 // En el Mac (tauri dev o navegador) se fuerza con «?movil» para revisarlo; «?movil=0» lo quita.
 import { esAndroid } from "./plataforma";
+import { demoCelular } from "./demo/modo";
 
 const ANGOSTA = "(max-width: 599px)";
 const CLAVE = "cofre-movil";
 
 function forzado(): boolean {
+  if (demoCelular) return true; // npm run demo -- --celular
   try {
     const q = new URLSearchParams(location.search);
     if (q.has("movil")) {

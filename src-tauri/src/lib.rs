@@ -20,7 +20,7 @@ mod trm;
 
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
 pub fn run() {
-    let migraciones = vec![Migration {
+    let migraciones = || vec![Migration {
         version: 1,
         description: "esquema inicial",
         sql: include_str!("../migrations/0001_init.sql"),
@@ -104,7 +104,9 @@ pub fn run() {
         .plugin(tauri_plugin_dialog::init())
         .plugin(
             tauri_plugin_sql::Builder::default()
-                .add_migrations("sqlite:cofre.db", migraciones)
+                .add_migrations("sqlite:cofre.db", migraciones())
+                // Base aparte para `npm run demo` (datos inventados).
+                .add_migrations("sqlite:cofre-demo.db", migraciones())
                 .build(),
         )
         .invoke_handler(comandos())
@@ -122,13 +124,19 @@ pub fn run() {
                 app.set_activation_policy(tauri::ActivationPolicy::Accessory);
             }
             if let Some(ventana) = app.get_webview_window("main") {
+                // `npm run demo -- --celular`: ventana del tamaño de un celular, sin el ancho mínimo.
+                if std::env::var("COFRE_DEMO_CELULAR").is_ok_and(|v| v == "1") {
+                    let _ = ventana.set_min_size(None::<tauri::LogicalSize<f64>>);
+                    let _ = ventana.set_size(tauri::LogicalSize::new(412.0, 915.0));
+                    let _ = ventana.center();
+                }
                 if !revision {
                     let _ = ventana.show();
                 }
             }
             // Centro de sincronización: el Mac escucha en la red local mientras Cofre está abierto.
             #[cfg(desktop)]
-            if !revision {
+            if !revision && !std::env::var("COFRE_DEMO").is_ok_and(|v| v == "1") {
                 sinc::iniciar_centro(app.handle().clone());
             }
             Ok(())

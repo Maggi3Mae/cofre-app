@@ -27,6 +27,7 @@
   import Avisos from "$lib/alertas/Avisos.svelte";
   import { avisos, iniciarAlertas } from "$lib/alertas/estado-alertas.svelte";
   import { iniciarCentro } from "$lib/sinc/puente";
+  import { esDemo } from "$lib/demo/modo";
   import { iniciarSincAutomatica } from "$lib/sinc/estado-sinc.svelte";
 
   let { children } = $props();
@@ -34,6 +35,7 @@
   onMount(iniciarAlertas);
   // En el Mac: atender a celular y tablet cuando sincronizan.
   onMount(() => {
+    if (esDemo) return; // la demostración no atiende equipos
     const limpiar = iniciarCentro();
     return () => void limpiar.then((f) => f());
   });

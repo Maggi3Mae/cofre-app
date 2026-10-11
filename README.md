@@ -76,9 +76,16 @@ La versión de Windows tiene todo lo de Mac (la revisión diaria usa el Programa
 
 Sigue la guía de [ANDROID.md](ANDROID.md): Android Studio, SDK/NDK, APK de depuración y APK firmada.
 
+### Probar con datos de ejemplo
+
+`npm run demo` abre Cofre con seis meses de datos inventados (cuentas, movimientos, presupuestos, CDT, cajitas, préstamos y recurrentes), en una base aparte: tus datos no se tocan y no se sincroniza nada.
+
+- `npm run demo -- --celular`: ventana del tamaño de un celular, con el diseño de celular.
+- `npm run demo -- --reiniciar`: borra la base de ejemplo y la vuelve a llenar.
+
 ### Pruebas
 
-- `npm run prueba:sinc` y `npm run prueba:recurrentes`: usan SQLite real.
+- `npm run prueba:sinc`, `npm run prueba:recurrentes` y `npm run prueba:demo`: usan SQLite real.
 - `cargo test --lib`, dentro de `src-tauri`.
 
 ## Dónde viven tus datos

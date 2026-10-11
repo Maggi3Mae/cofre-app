@@ -9,6 +9,7 @@ import { notificarAndroid, programarAvisos, tipoDeAlerta } from "./android";
 import { revisarTodo, generarAutomaticas, porConfirmar, alCambiarDatos, leerCorreo, actualizarTrmSiToca, type Alerta, type Nivel } from "$lib/datos";
 import { pesos, hoy } from "$lib/formato";
 import { copiaSiToca } from "$lib/copias/copias";
+import { esDemo } from "$lib/demo/modo";
 import { datosCierre, mesAnterior, cierreEnviado, marcarCierre } from "$lib/datos/cierre";
 import { cierreHtml, cierreTexto, asuntoCierre } from "./correo-cierre";
 
@@ -86,7 +87,7 @@ export async function notificarSistema(titulo: string, cuerpo: string, siempre =
 /** Un solo correo con todas las alertas nuevas (si el correo está activo). */
 async function enviarCorreo(alertas: Alerta[]) {
   const c = await leerCorreo();
-  if (!esEscritorio) return; // el correo sale solo del Mac
+  if (!esEscritorio || esDemo) return; // el correo sale solo del computador (y nunca en la demostración)
   if (!c.activo || !c.usuario || !c.destino || !alertas.length) return;
   const asunto = alertas.length === 1 ? alertas[0].titulo : `Cofre: ${alertas.length} alertas`;
   try {
@@ -135,6 +136,8 @@ let espera: ReturnType<typeof setTimeout> | undefined;
  */
 export function iniciarAlertas(): () => void {
   invoke<boolean>("es_revision").catch(() => false).then(async (revision) => {
+    // Demostración: solo las alertas en la app (sin TRM de internet, copias ni correos).
+    if (esDemo) return void revisarAlertas();
     // TRM oficial antes de revisar (solo si está activada en Ajustes; tope de 20 s).
     await Promise.race([actualizarTrmSiToca(), new Promise((r) => setTimeout(r, 20_000))]);
     if (!revision) { void copiaAutomatica(false); void cierreAutomatico(false); return void revisarAlertas(); }
