@@ -62,4 +62,23 @@ prueba("una palabra que termina en «sa» no es razón social", () => {
   assert.equal(d.comercio, "La Casa de la Mesa");
 });
 
+prueba("OCR real: «S.A» leída como «$.A», sin la línea del NIT y con otro NIT en el pie", () => {
+  const t = `DOMICILIOS 24 HUNAS ele
+DROGUERIA EJEMPLO COLOMBIA $.A
+DSALES 316-000-0000
+DIAGONAL 1 NO 2-3 BOROTA OC Colombia
+Factura Esectrónica de Venta
+Totel 44,950
+TARJETA CREDITO 44,950
+VIG 18 MESES DEL 2026-09-29 AL 2028-03-29
+Software Ejemplo Colombia NIT 8001000000
+Proveedor Tecnológico: Facturas Ya S.A.S
+- Nombre del SW: Ejemplo - Nit: 890.000.001-1`;
+  for (const nit of [null, "900123456"]) {
+    const d = leerTextoFactura(t, nit);
+    assert.equal(d.comercio, "Drogueria Ejemplo Colombia");
+    assert.equal(d.nit, nit);
+  }
+});
+
 console.log(`\n${ok} pruebas de facturas OK`);

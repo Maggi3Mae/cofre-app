@@ -125,7 +125,8 @@ const letras = (l: string) => (l.match(/\p{L}/gu) ?? []).length;
 
 /** Razón social con su sufijo («FARMATODO COLOMBIA S.A») → nombre legible sin el sufijo («Farmatodo Colombia»). */
 function sinSociedad(l: string): string | null {
-  const base = limpiarLinea(l).replace(/\bN\.?I\.?T\b.*$/i, "").trim();
+  // El OCR suele leer la «S» de «S.A» como «$» o «5».
+  const base = limpiarLinea(l.replace(/(\s)[$5](?=\.?\s?A\b)/g, "$1S")).replace(/\bN\.?I\.?T\b.*$/i, "").trim();
   if (!reSociedad.test(base)) return null;
   const nombre = base.replace(reSociedad, "").replace(/[.\-&\s]+$/, "").trim();
   return letras(nombre) >= 3 ? comercioLegible(nombre) : null;
@@ -142,15 +143,17 @@ export function leerTextoFactura(texto: string, nitConocido: string | null = nul
 
   // NIT del comercio: el primero (el del cliente viene después, como «Nit o C.C»). Se saltan los del pie
   // de la factura electrónica (proveedor tecnológico, rango autorizado, resolución).
-  const pie = /PROVEEDOR|TECNOL|RANGO|RESOLUCI|AUTORIZ|PREFIJO|VIGENCIA|DIAN|SOFTWARE/i;
+  const pie = /PROVEEDOR|TECNOL|RANGO|RESOLUCI|AUTORIZ|PREFIJO|VIGENCIA|\bVIG\b|MESES DEL|DIAN|SOFTWARE|NOMBRE DEL SW/i;
   const esNit = (l: string, i: number) =>
     /\bN\.?I\.?T\b/i.test(l) && !/C\.?\s?C/i.test(l) && !pie.test(l) && !pie.test(lineas[i - 1] ?? "");
   const mitad = Math.ceil(lineas.length / 2);
   let iNit = -1;
   if (nitConocido) iNit = lineas.findIndex((l) => soloDigitos(l).includes(nitConocido));
   if (iNit < 0) iNit = lineas.findIndex((l, i) => i < mitad && esNit(l, i));
-  if (iNit < 0) iNit = lineas.findIndex(esNit);
-  if (iNit >= 0) d.nit = nitConocido ?? normalizarNit(lineas[iNit].replace(/^.*?N\.?I\.?T\.?\s*[:.]?/i, ""));
+  // El NIT del comercio va arriba: si el QR ya lo dio y no aparece en la primera mitad, no se busca en el pie.
+  if (iNit < 0 && !nitConocido) iNit = lineas.findIndex(esNit);
+  if (nitConocido) d.nit = nitConocido;
+  else if (iNit >= 0) d.nit = normalizarNit(lineas[iNit].replace(/^.*?N\.?I\.?T\.?\s*[:.]?/i, ""));
 
   // Comercio, en orden de confianza:
   // 1. La razón social (termina en S.A., S.A.S., LTDA…) en la línea del NIT o en las 3 de arriba.
