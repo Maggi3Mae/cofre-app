@@ -93,7 +93,7 @@ Crear la llave (una vez), con datos neutros:
 
 ```sh
 keytool -genkeypair -v -keystore cofre-publica.jks -alias cofre -keyalg RSA -keysize 4096 -validity 10000 \
-  -dname "CN=Cofre, OU=Cofre, O=Cofre, L=, ST=, C=CO"
+  -dname "CN=Cofre, O=Cofre, C=CO"
 base64 -i cofre-publica.jks | pbcopy   # copia el archivo en base64
 ```
 
