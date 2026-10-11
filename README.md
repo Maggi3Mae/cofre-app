@@ -86,7 +86,7 @@ Sigue la guía de [ANDROID.md](ANDROID.md): Android Studio, SDK/NDK, APK de depu
 
 ### Pruebas
 
-- `npm run prueba:sinc`, `npm run prueba:recurrentes` y `npm run prueba:demo`: usan SQLite real.
+- `npm run prueba:sinc`, `npm run prueba:recurrentes` y `npm run prueba:demo` (con SQLite real) y `npm run prueba:facturas` (lectura de facturas).
 - `cargo test --lib`, dentro de `src-tauri`.
 
 ## Dónde viven tus datos

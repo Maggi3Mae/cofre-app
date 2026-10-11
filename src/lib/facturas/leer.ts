@@ -118,32 +118,61 @@ const MONTO = String.raw`\$?\s?\d{1,3}(?:[.,]\d{3})+(?:[.,]\d{2})?|\$\s?\d{4,}(?
 const reMonto = new RegExp(MONTO, "g");
 const montosDe = (l: string) => (l.match(reMonto) ?? []).map((x) => montoFactura(x)).filter((x): x is number => x != null && x > 0);
 
-export function leerTextoFactura(texto: string): DatosFactura {
+/** Sufijo de sociedad colombiana al final de una línea: S.A., S.A.S., LTDA, E.U., S.C.A., S.EN C. */
+const reSociedad = /\s+(?:S\.?\s?A\.?\s?S\.?|S\.?\s?A\.?|LTDA\.?|E\.?\s?U\.?|S\.?\s?C\.?\s?A\.?|S\.?\s?EN\s?C\.?)\s*$/i;
+const limpiarLinea = (l: string) => l.replace(/[^\p{L}\d&.\- ]/gu, " ").replace(/\s+/g, " ").trim();
+const letras = (l: string) => (l.match(/\p{L}/gu) ?? []).length;
+
+/** Razón social con su sufijo («FARMATODO COLOMBIA S.A») → nombre legible sin el sufijo («Farmatodo Colombia»). */
+function sinSociedad(l: string): string | null {
+  const base = limpiarLinea(l).replace(/\bN\.?I\.?T\b.*$/i, "").trim();
+  if (!reSociedad.test(base)) return null;
+  const nombre = base.replace(reSociedad, "").replace(/[.\-&\s]+$/, "").trim();
+  return letras(nombre) >= 3 ? comercioLegible(nombre) : null;
+}
+
+/**
+ * `nitConocido`: el NIT que ya se sabe (p. ej. el del QR de la DIAN). Sirve para ubicar en el texto el
+ * encabezado del comercio aunque el OCR lea mal la palabra «NIT».
+ */
+export function leerTextoFactura(texto: string, nitConocido: string | null = null): DatosFactura {
   const d = vacio();
   d.fuente.ocr = true;
   const lineas = texto.split("\n").map((l) => l.trim()).filter(Boolean);
 
   // NIT del comercio: el primero (el del cliente viene después, como «Nit o C.C»). Se saltan los del pie
   // de la factura electrónica (proveedor tecnológico, rango autorizado, resolución).
-  const pie = /PROVEEDOR|TECNOL|RANGO|RESOLUCI|AUTORIZ|PREFIJO|VIGENCIA|DIAN/i;
+  const pie = /PROVEEDOR|TECNOL|RANGO|RESOLUCI|AUTORIZ|PREFIJO|VIGENCIA|DIAN|SOFTWARE/i;
   const esNit = (l: string, i: number) =>
     /\bN\.?I\.?T\b/i.test(l) && !/C\.?\s?C/i.test(l) && !pie.test(l) && !pie.test(lineas[i - 1] ?? "");
   const mitad = Math.ceil(lineas.length / 2);
-  let iNit = lineas.findIndex((l, i) => i < mitad && esNit(l, i));
+  let iNit = -1;
+  if (nitConocido) iNit = lineas.findIndex((l) => soloDigitos(l).includes(nitConocido));
+  if (iNit < 0) iNit = lineas.findIndex((l, i) => i < mitad && esNit(l, i));
   if (iNit < 0) iNit = lineas.findIndex(esNit);
-  if (iNit >= 0) d.nit = normalizarNit(lineas[iNit].replace(/^.*?N\.?I\.?T\.?\s*[:.]?/i, ""));
+  if (iNit >= 0) d.nit = nitConocido ?? normalizarNit(lineas[iNit].replace(/^.*?N\.?I\.?T\.?\s*[:.]?/i, ""));
 
-  // Comercio: la línea con más letras antes del NIT (o la primera con letras).
-  const antes = (iNit > 0 ? lineas.slice(Math.max(0, iNit - 3), iNit) : lineas.slice(0, 4))
-    .map((l) => l.replace(/[^\p{L}\d&.\- ]/gu, " ").replace(/\s+/g, " ").trim())
-    .filter((l) => (l.match(/\p{L}/gu) ?? []).length >= 4 && !pie.test(l));
-  // De cada candidata se toma la racha más larga de palabras en mayúscula (el OCR deja basura alrededor).
-  const nombres = antes
-    .map((l) => (l.match(/(?:\p{Lu}[\p{Lu}&.\-]+\s?)+/gu) ?? []).map((x) => x.trim()).sort((a, b) => b.length - a.length)[0] ?? "")
-    .filter((x) => x.length >= 4);
-  // Con NIT: la más larga de las 3 líneas de arriba. Sin NIT: la primera (el nombre suele abrir el
-  // tiquete; las siguientes son eslogan y dirección).
-  if (nombres.length) d.comercio = comercioLegible(iNit > 0 ? [...nombres].sort((a, b) => b.length - a.length)[0] : nombres[0]);
+  // Comercio, en orden de confianza:
+  // 1. La razón social (termina en S.A., S.A.S., LTDA…) en la línea del NIT o en las 3 de arriba.
+  // 2. Una razón social en la primera mitad del tiquete (lejos del pie, donde está el proveedor tecnológico).
+  // 3. La línea con más letras antes del NIT (o la primera con letras).
+  const cerca = iNit >= 0 ? lineas.slice(Math.max(0, iNit - 3), iNit + 1).reverse() : [];
+  const razon =
+    cerca.map(sinSociedad).find((x) => x) ??
+    lineas.slice(0, mitad).filter((l) => !pie.test(l)).map(sinSociedad).find((x) => x);
+  if (razon) d.comercio = razon;
+  else {
+    const antes = (iNit > 0 ? lineas.slice(Math.max(0, iNit - 3), iNit) : lineas.slice(0, 4))
+      .map(limpiarLinea)
+      .filter((l) => letras(l) >= 4 && !pie.test(l));
+    // De cada candidata se toma la racha más larga de palabras en mayúscula (el OCR deja basura alrededor).
+    const nombres = antes
+      .map((l) => (l.match(/(?:\p{Lu}[\p{Lu}&.\-]+\s?)+/gu) ?? []).map((x) => x.trim()).sort((a, b) => b.length - a.length)[0] ?? "")
+      .filter((x) => x.length >= 4);
+    // Con NIT: la más larga de las 3 líneas de arriba. Sin NIT: la primera (el nombre suele abrir el
+    // tiquete; las siguientes son eslogan y dirección).
+    if (nombres.length) d.comercio = comercioLegible(iNit > 0 ? [...nombres].sort((a, b) => b.length - a.length)[0] : nombres[0]);
+  }
 
   const f = buscarFecha(texto);
   d.fecha = f?.fecha ?? null;

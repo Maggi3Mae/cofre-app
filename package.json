@@ -15,6 +15,7 @@
     "tauri": "tauri",
     "prueba:sinc": "node --experimental-strip-types --no-warnings pruebas/sinc.prueba.ts",
     "prueba:recurrentes": "node --experimental-strip-types --no-warnings pruebas/recurrentes.prueba.ts",
+    "prueba:facturas": "node --experimental-strip-types --no-warnings --import ./pruebas/apoyo/registrar.mjs pruebas/facturas.prueba.ts",
     "prueba:demo": "node --experimental-strip-types --no-warnings --import ./pruebas/apoyo/registrar.mjs pruebas/demo.prueba.ts",
     "demo": "node --experimental-strip-types --no-warnings scripts/demo.mjs"
   },

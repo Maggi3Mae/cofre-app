@@ -179,7 +179,7 @@ export async function leerFactura(foto: HTMLCanvasElement, progreso?: (etapa: st
   leyendo = true;
   try {
     const { data } = await w.recognize(lista);
-    return { datos: combinar(deQr, leerTextoFactura(data.text)), qr, texto: data.text };
+    return { datos: combinar(deQr, leerTextoFactura(data.text, deQr?.nit ?? null)), qr, texto: data.text };
   } finally {
     leyendo = false;
     alProgreso = null;
