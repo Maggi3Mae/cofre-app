@@ -28,7 +28,7 @@
 {#snippet item(r: string, nombre: string, icono: NombreIcono, punto = 0, clasePunto = "")}
   <a href={r} class="item" class:on={activo(r)} aria-current={activo(r) ? "page" : undefined}>
     <span class="pastilla"><Icono nombre={icono} clase={icono === "puntos" ? "gruesa" : ""} />
-      {#if punto > 0}<span class="punto {clasePunto}" aria-label="{punto} avisos">{punto}</span>{/if}
+      {#if punto > 0}<span class="cf-aviso cf-aviso--icono {clasePunto}" aria-label="{punto} avisos">{punto}</span>{/if}
     </span>{nombre}
   </a>
 {/snippet}
@@ -39,8 +39,8 @@
   <nav class="cf-glass-3" aria-label="Principal">
     {#each izquierda as i}{@render item(i.ruta, i.nombre, i.icono)}{/each}
     <button type="button" class="nuevo" onclick={abrirNuevo} aria-label="Registrar movimiento"><Icono nombre="mas" /></button>
-    {@render item("/medeben", "Me deben", "personas", avisos.prestamosVencidos, "vencido")}
-    {@render item("/mas", "Más", "puntos", avisos.enRiesgo)}
+    {@render item("/medeben", "Me deben", "personas", avisos.prestamosVencidos, "cf-aviso--vencido")}
+    {@render item("/mas", "Más", "puntos", avisos.enRiesgo, "cf-aviso--aviso")}
   </nav>
 </div>
 
@@ -70,10 +70,5 @@
     -webkit-tap-highlight-color: transparent;
   }
   .nuevo :global(.cf-icon) { width: 26px; height: 26px; stroke-width: 2.2; }
-  .punto {
-    position: absolute; top: -2px; right: 6px; min-width: 16px; height: 16px; padding: 0 4px; box-sizing: border-box;
-    border-radius: var(--r-full); background: var(--warn-90); color: var(--on-primary);
-    font-size: 10px; font-weight: 700; line-height: 16px; text-align: center;
-  }
-  .punto.vencido { background: var(--over-100-alt); }
+  .pastilla :global(.cf-aviso--icono) { top: -4px; right: 2px; }
 </style>

@@ -85,7 +85,7 @@
 .cf-nav a { display: flex; align-items: center; gap: var(--space-3); height: 44px; padding: 0 var(--space-3); border-radius: var(--r-md); text-decoration: none; font-size: 14px; font-weight: 500; color: var(--ink-2); }
 .cf-nav a[aria-current="page"] { font-weight: 600; color: var(--ink); background: var(--nav-active); box-shadow: var(--shadow-1); }
 .cf-nav a[aria-current="page"] .cf-icon { color: var(--primary); }
-.cf-nav a > span { flex: 1; }
+.cf-nav a > span:not(.cf-aviso) { flex: 1; }
 
 /* Icon tile */
 .cf-tile { width: 40px; height: 40px; flex: none; border-radius: 12px; display: flex; align-items: center; justify-content: center; }

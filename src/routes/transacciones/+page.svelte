@@ -347,7 +347,7 @@
       <input bind:value={texto} oninput={buscar} placeholder="Buscar comercio o nota" aria-label="Buscar movimientos" />
     </label>
     <a class="cf-btn cf-btn--secondary recurrentes" href="/recurrentes"><Icono nombre="repetir" />Recurrentes{#if avisos.porConfirmar > 0}<span
-      class="punto-rec" aria-label="{avisos.porConfirmar} por confirmar" title="{avisos.porConfirmar} por confirmar">{avisos.porConfirmar}</span>{/if}</a>
+      class="cf-aviso" aria-label="{avisos.porConfirmar} por confirmar" title="{avisos.porConfirmar} por confirmar">{avisos.porConfirmar}</span>{/if}</a>
     <ElegirFoto elegir={elegirFoto} hacia="abajo"><Icono nombre="documento" /><span class="largo">Desde </span>factura</ElegirFoto>
     <button class="cf-btn cf-btn--primary" onclick={nuevo}><Icono nombre="mas" />Nuevo<span class="largo"> movimiento</span></button>
   </div>
@@ -530,10 +530,6 @@
 
 <style>
   .recurrentes { position: relative; }
-  .punto-rec {
-    min-width: 18px; height: 18px; padding: 0 5px; border-radius: 9px; display: inline-grid; place-items: center;
-    background: var(--warn-80); color: #fff; font-size: 11px; font-weight: 700; margin-left: 2px;
-  }
   /* ---------- Celular ---------- */
   .buscar-m { height: 48px; border-radius: 16px; }
   .buscar-m :global(.cf-icon) { color: var(--ink-3); }

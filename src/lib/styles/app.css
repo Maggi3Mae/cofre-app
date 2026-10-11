@@ -74,11 +74,11 @@ html.tablet.vertical .app:not(.menu-abierto) .lateral { padding-inline: var(--sp
 html.tablet.vertical .app:not(.menu-abierto) .logo { flex-direction: column; padding: 0; gap: var(--space-3); }
 html.tablet.vertical .app:not(.menu-abierto) .logo-tesela,
 html.tablet.vertical .app:not(.menu-abierto) .logo-nombre,
-html.tablet.vertical .app:not(.menu-abierto) .cf-nav a > span:not(.punto),
+html.tablet.vertical .app:not(.menu-abierto) .cf-nav a > span:not(.cf-aviso),
 html.tablet.vertical .app:not(.menu-abierto) .lateral .tema { display: none; }
 html.tablet.vertical .app:not(.menu-abierto) .cf-nav { align-self: center; display: flex; flex-direction: column; align-items: center; }
 html.tablet.vertical .app:not(.menu-abierto) .cf-nav a { justify-content: center; padding: 0; position: relative; width: 52px; height: 48px; min-height: 48px; flex: none; }
-html.tablet.vertical .app:not(.menu-abierto) .cf-nav .punto { position: absolute; top: 4px; right: 4px; margin: 0; min-width: 16px; height: 16px; line-height: 16px; font-size: 10px; padding: 0 4px; }
+html.tablet.vertical .app:not(.menu-abierto) .cf-nav .cf-aviso { position: absolute; top: 2px; right: 2px; min-width: 18px; height: 18px; padding: 0 5px; font-size: 11px; box-shadow: 0 0 0 2px var(--surface); }
 html.tablet.vertical .app.menu-abierto .lateral { position: fixed; z-index: 40; left: var(--space-4); width: 260px; box-shadow: var(--shadow-3); }
 /* Cada uno en su columna: si el menú sale de la cuadrícula (abierto encima), el contenido no se corre a la de 76 px. */
 .app > .lateral { grid-column: 1; grid-row: 1; }
@@ -115,3 +115,16 @@ html.celular .cf-glass-1, html.tablet .cf-glass-1 { background: color-mix(in srg
 /* Android: sin el recuadro azul que pinta el WebView al tocar (el estado presionado ya lo da cada control). */
 html.celular, html.tablet { -webkit-tap-highlight-color: transparent; }
 html.celular :focus:not(:focus-visible), html.tablet :focus:not(:focus-visible) { outline: none; }
+
+/* Avisos con número (menú lateral, barra del celular, botones): pastilla pequeña con el fondo suave del tono.
+   marca = algo por hacer (recurrentes por confirmar) · aviso = presupuestos en riesgo · vencido = préstamos vencidos. */
+.cf-aviso {
+  flex: none; min-width: 22px; height: 22px; box-sizing: border-box; padding: 0 7px; border-radius: var(--r-full);
+  display: inline-grid; place-items: center; font-size: 12px; font-weight: 650; line-height: 1;
+  font-family: var(--font-sans); font-variant-numeric: tabular-nums;
+  background: var(--primary-soft); color: var(--primary-text);
+}
+.cf-aviso--aviso { background: var(--warn-90-soft); color: var(--warn-90); }
+.cf-aviso--vencido { background: var(--over-100-soft); color: var(--over-100); }
+/* Encima de un ícono (menú recogido de la tablet, barra del celular): más pequeña y con borde para separarla. */
+.cf-aviso--icono { position: absolute; min-width: 18px; height: 18px; padding: 0 5px; font-size: 11px; box-shadow: 0 0 0 2px var(--surface); }

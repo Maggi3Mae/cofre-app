@@ -80,15 +80,15 @@
         <a href={p.ruta} aria-current={page.url.pathname === p.ruta || (p.ruta === "/transacciones" && page.url.pathname === "/recurrentes") ? "page" : undefined} title={p.nombre}>
           <Icono nombre={p.icono} /><span>{p.nombre}</span>
           {#if p.ruta === "/presupuestos" && avisos.enRiesgo > 0}
-            <span class="punto" title="{avisos.enRiesgo} presupuesto{avisos.enRiesgo === 1 ? '' : 's'} cerca del tope o excedido"
+            <span class="cf-aviso cf-aviso--aviso" title="{avisos.enRiesgo} presupuesto{avisos.enRiesgo === 1 ? '' : 's'} cerca del tope o excedido"
               aria-label="{avisos.enRiesgo} en riesgo">{avisos.enRiesgo}</span>
           {/if}
           {#if p.ruta === "/transacciones" && avisos.porConfirmar > 0}
-            <span class="punto" title="{avisos.porConfirmar} recurrente{avisos.porConfirmar === 1 ? '' : 's'} por confirmar"
+            <span class="cf-aviso" title="{avisos.porConfirmar} recurrente{avisos.porConfirmar === 1 ? '' : 's'} por confirmar"
               aria-label="{avisos.porConfirmar} por confirmar">{avisos.porConfirmar}</span>
           {/if}
           {#if p.ruta === "/medeben" && avisos.prestamosVencidos > 0}
-            <span class="punto vencido" title="{avisos.prestamosVencidos} préstamo{avisos.prestamosVencidos === 1 ? '' : 's'} vencido{avisos.prestamosVencidos === 1 ? '' : 's'}"
+            <span class="cf-aviso cf-aviso--vencido" title="{avisos.prestamosVencidos} préstamo{avisos.prestamosVencidos === 1 ? '' : 's'} vencido{avisos.prestamosVencidos === 1 ? '' : 's'}"
               aria-label="{avisos.prestamosVencidos} vencidos">{avisos.prestamosVencidos}</span>
           {/if}
         </a>
@@ -109,9 +109,4 @@
 <Avisos />
 
 <style>
-  .punto {
-    margin-left: auto; min-width: 20px; height: 20px; padding: 0 6px; border-radius: var(--r-full);
-    background: var(--warn-90); color: var(--on-primary); font-size: 11px; font-weight: 700; line-height: 20px; text-align: center;
-  }
-  .punto.vencido { background: var(--over-100-alt); }
 </style>
