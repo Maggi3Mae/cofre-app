@@ -125,6 +125,8 @@ pub fn run() {
             }
             if let Some(ventana) = app.get_webview_window("main") {
                 // `npm run demo -- --celular`: ventana del tamaño de un celular, sin el ancho mínimo.
+                // Solo escritorio: en Android la ventana no tiene tamaño que cambiar.
+                #[cfg(desktop)]
                 if std::env::var("COFRE_DEMO_CELULAR").is_ok_and(|v| v == "1") {
                     let _ = ventana.set_min_size(None::<tauri::LogicalSize<f64>>);
                     let _ = ventana.set_size(tauri::LogicalSize::new(412.0, 915.0));
