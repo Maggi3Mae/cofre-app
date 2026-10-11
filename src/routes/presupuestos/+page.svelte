@@ -223,7 +223,7 @@
 {:else if egresos.length && !formAbierto}
   <section class="cf-glass cf-card vacio">
     <p>Aún no tienes presupuestos. Ponle un límite mensual a una categoría y te avisaremos al 80, 90 y 100 %.</p>
-    {#if pantalla.celular}<p class="caption">Créalos en el Mac: llegan aquí al sincronizar.</p>
+    {#if pantalla.celular}<p class="caption">Créalos en el computador: llegan aquí al sincronizar.</p>
     {:else}<button class="cf-btn cf-btn--primary" onclick={abrirNuevo}><Icono nombre="mas" />Nuevo presupuesto</button>{/if}
   </section>
 {/if}

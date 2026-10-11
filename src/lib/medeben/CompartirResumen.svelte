@@ -5,7 +5,7 @@
   import { save } from "@tauri-apps/plugin-dialog";
   import Panel from "$lib/ui/Panel.svelte";
   import Icono from "$lib/Icono.svelte";
-  import { esAndroid } from "$lib/plataforma";
+  import { esAndroid, compu } from "$lib/plataforma";
   import { leerDatosPago, leerAjuste, guardarAjuste } from "$lib/datos/ajustes";
   import { imagenResumen, nombreArchivo, OPCIONES_INICIALES, type OpcionesResumen } from "./resumen";
 
@@ -69,7 +69,7 @@
   const copiar = () => hacer(async () => {
     // Safari/WebKit pide la promesa dentro del gesto: se le pasa sin esperar.
     try { await navigator.clipboard.write([new ClipboardItem({ "image/png": completa("png") })]); }
-    catch { throw new Error("El Mac no dejó copiar la imagen. Usa «Guardar imagen»."); }
+    catch { throw new Error(`El ${compu} no dejó copiar la imagen. Usa «Guardar imagen».`); }
     return "Imagen copiada: pégala en WhatsApp.";
   });
 

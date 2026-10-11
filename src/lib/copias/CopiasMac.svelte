@@ -2,6 +2,7 @@
   // Ajustes del Mac → Copias de seguridad: carpeta, contraseña, copia diaria, «Copiar ahora» y «Restaurar».
   import { onMount } from "svelte";
   import Icono from "$lib/Icono.svelte";
+  import { compu, llavero } from "$lib/plataforma";
   import {
     leerConfigCopias, guardarConfigCopias, tieneContrasena, guardarContrasena, elegirCarpeta, elegirArchivoCopia,
     hacerCopia, listarCopias, prepararRestauracion, reiniciarParaRestaurar, fechaDeCopia, tamano,
@@ -55,7 +56,7 @@
     await guardarContrasena(clave1);
     const habia = conClave;
     conClave = true; editandoClave = false; clave1 = ""; clave2 = "";
-    aviso = habia ? "Contraseña cambiada. Las copias anteriores siguen abriéndose con la contraseña anterior." : "Contraseña guardada en el Llavero.";
+    aviso = habia ? "Contraseña cambiada. Las copias anteriores siguen abriéndose con la contraseña anterior." : `Contraseña guardada en el ${llavero}.`;
   }); };
 
   const alternar = () => hacer(async () => {
@@ -107,7 +108,7 @@
       <span class="cf-tile cf-tile--brand"><Icono nombre="candado" /></span>
       <div class="texto">
         <b>Contraseña</b>
-        <span class="caption">{conClave ? "Guardada en el Llavero de este Mac." : "Sin ella no se puede abrir ni restaurar una copia: guárdala en un lugar seguro."}</span>
+        <span class="caption">{conClave ? `Guardada en el ${llavero} de este ${compu}.` : "Sin ella no se puede abrir ni restaurar una copia: guárdala en un lugar seguro."}</span>
       </div>
       {#if !editandoClave}
         <button class="cf-btn cf-btn--secondary" onclick={() => { editandoClave = true; error = ""; }}>{conClave ? "Cambiar" : "Crear contraseña"}</button>

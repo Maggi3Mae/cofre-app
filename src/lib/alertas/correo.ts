@@ -1,6 +1,7 @@
 // Correo de alertas: HTML con el estilo de Cofre (tablas y estilos en línea, sin imágenes ni nada
 // externo) y su versión en texto plano. Colores fijos del tema claro de design/tokens.json.
 import type { Alerta } from "$lib/datos/alertas";
+import { compu } from "$lib/plataforma";
 
 export type AlertaCorreo = Pick<Alerta, "nivel" | "titulo" | "cuerpo" | "progreso"> & { tipo: Alerta["tipo"] | "prueba" };
 
@@ -52,7 +53,7 @@ const fechaHoy = () => new Intl.DateTimeFormat("es-CO", { day: "numeric", month:
 export const tituloAlertas = (n: number) => `Tienes ${n} ${n === 1 ? "alerta nueva" : "alertas nuevas"}`;
 
 export function correoHtml(alertas: AlertaCorreo[], encabezado = tituloAlertas(alertas.length)): string {
-  return marcoCorreo(encabezado, alertas.map(tarjeta).join(""), "Abre Cofre en tu Mac para ver el detalle.");
+  return marcoCorreo(encabezado, alertas.map(tarjeta).join(""), `Abre Cofre en tu ${compu} para ver el detalle.`);
 }
 
 /** Marco común de los correos de Cofre: encabezado violeta con la fecha, contenido y pie. */
@@ -81,7 +82,7 @@ export function marcoCorreo(encabezado: string, contenido: string, pie: string, 
   <tr><td style="background:${C.superficie};padding:20px 20px 8px;border-radius:0 0 20px 20px;">
 ${contenido}
     <div style="padding:12px 4px 16px;font-size:12px;line-height:18px;color:${C.tinta2};text-align:center;">
-      ${esc(pie)}<br>Enviado por Cofre desde tu Mac · tus datos no salen de tu computador.
+      ${esc(pie)}<br>Enviado por Cofre desde tu ${compu} · tus datos no salen de tu computador.
     </div>
   </td></tr>
 </table>

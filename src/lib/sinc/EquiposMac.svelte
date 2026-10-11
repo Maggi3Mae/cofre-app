@@ -7,6 +7,7 @@
   import { leerNombre } from "$lib/datos/ajustes";
   import { estadoSinc, type EstadoSinc } from "./puente";
   import { haceCuanto } from "./estado-sinc.svelte";
+  import { compu } from "$lib/plataforma";
 
   let estado = $state<EstadoSinc | null>(null);
   let codigo = $state<string | null>(null);
@@ -45,7 +46,7 @@
     aviso = ""; error = "";
     try {
       const nombre = await leerNombre().catch(() => "");
-      codigo = await invoke<string>("sinc_codigo_nuevo", { nombre: nombre ? `Mac de ${nombre}` : "Mac" });
+      codigo = await invoke<string>("sinc_codigo_nuevo", { nombre: nombre ? `${compu} de ${nombre}` : compu });
       vence = Date.now() + 5 * 60_000;
       ahora = Date.now();
     } catch (e) { error = String(e); }
@@ -66,7 +67,7 @@
 <section class="cf-glass cf-card seccion" aria-labelledby="t-equipos">
   <h2 id="t-equipos" class="cf-card-title">Equipos</h2>
   <p class="intro">
-    Tu celular y tu tablet se sincronizan con este Mac por la red Wi‑Fi de la casa, mientras Cofre está abierto aquí.
+    Tu celular y tu tablet se sincronizan con este {compu} por la red Wi‑Fi de la casa, mientras Cofre está abierto aquí.
     Todo viaja cifrado y solo entre tus equipos.
   </p>
 
@@ -87,7 +88,7 @@
 
   {#if estado?.servidor}
     <p class="ayuda">
-      Si el otro equipo no encuentra este Mac, escribe a mano:
+      Si el otro equipo no encuentra este {compu}, escribe a mano:
       {#each estado.servidor.ips as ip, i}{i ? " o " : ""}<b class="dir">{ip} : {estado.servidor.puerto}</b>{/each}
     </p>
   {:else if estado}

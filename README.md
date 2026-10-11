@@ -2,7 +2,7 @@
 
 **Tus finanzas, en tus manos.** Una app de finanzas personales pensada para Colombia, donde todos los datos viven en tu equipo. No hay cuentas, servidores ni suscripciones.
 
-Funciona en Mac y Android (celular y tablet). Windows está en camino; ver [Windows](#windows-experimental).
+Funciona en Mac, Windows (en pruebas) y Android (celular y tablet).
 
 ## Qué hace
 
@@ -18,7 +18,7 @@ Funciona en Mac y Android (celular y tablet). Windows está en camino; ver [Wind
 - **Reportes** por año, mes y cuenta, con descarga a Excel.
 - **Alertas** en la app, como notificación y, si lo activas, por correo. También un cierre del mes por correo.
 - **Copias de seguridad** cifradas con tu propia contraseña.
-- **Sincronización por Wi‑Fi** entre el Mac y Android, cifrada de punta a punta y sin pasar por internet.
+- **Sincronización por Wi‑Fi** entre el computador y Android, cifrada de punta a punta y sin pasar por internet.
 - Tema claro y oscuro.
 
 ## Privacidad
@@ -44,17 +44,15 @@ Las versiones listas para instalar están en **[Releases](../../releases)**.
 2. Ábrelo y, si Android lo pide, permite **instalar apps de fuentes desconocidas** para tu navegador o administrador de archivos.
 3. Cofre no está en Play Store. Android puede mostrar un aviso de Play Protect; elige **Instalar de todas formas**.
 
-Para sincronizar con el Mac: en el Mac ve a Ajustes → Equipos → «Emparejar un equipo», y en Android ve a Más → Sincronizar con el Mac. Los dos equipos tienen que estar en la misma red Wi‑Fi.
+Para sincronizar con el computador (Mac o PC): en el computador ve a Ajustes → Equipos → «Emparejar un equipo», y en Android ve a Más → Sincronizar. Los dos equipos tienen que estar en la misma red Wi‑Fi.
 
-### Windows (experimental)
+### Windows (en pruebas)
 
-Cofre usa Tauri, que funciona en Windows, pero **todavía no se ha probado ahí** y hay funciones que hoy solo existen en Mac:
+1. Descarga el instalador `Cofre_…_x64-setup.exe` desde Releases y ábrelo. Se instala solo para tu usuario y no pide permisos de administrador.
+2. Windows SmartScreen puede avisar que la app no es conocida: **Más información → Ejecutar de todas formas**.
+3. La primera vez que abras Cofre, el Firewall de Windows pregunta si puede usar la red: elige **Redes privadas → Permitir**. Eso es lo que deja sincronizar con el celular.
 
-- La revisión diaria automática de alertas.
-- Ser el «centro» de la sincronización con Android.
-- Algunos textos que todavía dicen «macOS».
-
-Si quieres probarla, compílala tú siguiendo los pasos de [Compilar desde el código](#compilar-desde-el-código), en la parte de Windows.
+La versión de Windows tiene todo lo de Mac (la revisión diaria usa el Programador de tareas y las claves van al Administrador de credenciales), pero todavía se está probando: si algo falla, abre un *issue*.
 
 ## Compilar desde el código
 

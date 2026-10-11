@@ -2,7 +2,7 @@
   // Celular: jalar hacia abajo (estando arriba del todo) sincroniza con el Mac.
   import Icono from "$lib/Icono.svelte";
   import { mostrarAviso } from "$lib/alertas/estado-alertas.svelte";
-  import { sinc, sincronizar } from "$lib/sinc/estado-sinc.svelte";
+  import { sinc, sincronizar, centro } from "$lib/sinc/estado-sinc.svelte";
 
   // Gesto largo a propósito (antes se disparaba solo al hacer scroll): hay que jalar unos 250 px
   // con el dedo, y no cuenta hasta pasar los primeros 30 px.
@@ -44,7 +44,7 @@
     if (!listo) { distancia = 0; return; }
     if (!sinc.emparejado) {
       distancia = 0;
-      mostrarAviso({ titulo: "Sin emparejar", cuerpo: "Empareja este celular en Más → Sincronizar con el Mac.", nivel: "w80" });
+      mostrarAviso({ titulo: "Sin emparejar", cuerpo: `Empareja este celular en Más → Sincronizar con el ${centro()}.`, nivel: "w80" });
       return;
     }
     girando = true;
@@ -69,7 +69,7 @@
       style:rotate={girando ? undefined : `${(distancia / UMBRAL) * 270}deg`}>
       <Icono nombre="sincronizar" />
     </span>
-    {#if girando}<span class="cf-sr">Sincronizando con el Mac</span>{/if}
+    {#if girando}<span class="cf-sr">Sincronizando con el {centro()}</span>{/if}
   </div>
 {/if}
 

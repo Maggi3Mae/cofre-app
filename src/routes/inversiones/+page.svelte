@@ -113,7 +113,7 @@
   {#if !cajitas.length}
     <section class="cf-glass cf-card vacio">
       <p>Registra tus cajitas para ver cuánto ganan cada día y qué tan cerca estás de cada meta.</p>
-      {#if pantalla.celular}<p class="caption">Créalas en el Mac: llegan aquí al sincronizar.</p>
+      {#if pantalla.celular}<p class="caption">Créalas en el computador: llegan aquí al sincronizar.</p>
       {:else}<button class="cf-btn cf-btn--primary" onclick={nuevaCajita}><Icono nombre="mas" />Nueva cajita</button>{/if}
     </section>
   {:else}
@@ -130,7 +130,7 @@
 {:else if !vigentes.length && !historial.length}
   <section class="cf-glass cf-card vacio">
     <p>Registra tus CDT para ver cuánto valen hoy, cuánto te retienen y cuánto recibirás al vencimiento.</p>
-    {#if pantalla.celular}<p class="caption">Créalos en el Mac: llegan aquí al sincronizar.</p>
+    {#if pantalla.celular}<p class="caption">Créalos en el computador: llegan aquí al sincronizar.</p>
     {:else}<button class="cf-btn cf-btn--primary" onclick={nuevo}><Icono nombre="mas" />Nuevo CDT</button>{/if}
   </section>
 {:else}

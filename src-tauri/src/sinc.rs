@@ -292,7 +292,7 @@ mod centro {
         let mut g = EMPAREJANDO.lock().map_err(|e| (500, e.to_string()))?;
         let Some(emp) = g.as_mut().filter(|e| e.vence > Instant::now()) else {
             *g = None;
-            return Err((410, "No hay un código activo en el Mac. Genera uno nuevo en Ajustes → Equipos.".into()));
+            return Err((410, "No hay un código activo en el computador. Genera uno nuevo en Ajustes → Equipos.".into()));
         };
         let (b, llave) = llave_spake_centro(&emp.codigo, &a).map_err(e400)?;
         emp.pendientes.insert(id, (llave, nombre));
@@ -311,7 +311,7 @@ mod centro {
             emp.pendientes.remove(&id);
             if emp.intentos >= 3 {
                 *g = None;
-                return Err((403, "Código incorrecto. Genera uno nuevo en el Mac.".into()));
+                return Err((403, "Código incorrecto. Genera uno nuevo en el computador.".into()));
             }
             return Err((403, "Código incorrecto.".into()));
         }
@@ -330,7 +330,7 @@ mod centro {
     fn cifrado(app: &AppHandle, sobre: &Value) -> Http<Value> {
         let id = texto(sobre, "id")?.to_string();
         let equipo = con_config(app, |c| Ok(c.equipos.iter().find(|e| e.id == id).cloned())).map_err(|e| (500, e))?
-            .ok_or((401, "Este equipo no está emparejado con el Mac.".to_string()))?;
+            .ok_or((401, "Este equipo no está emparejado con este computador.".to_string()))?;
         let llave = llave_de(&equipo.llave).map_err(|e| (500, e))?;
         // Un nonce no se acepta dos veces (nadie puede repetir un mensaje grabado).
         let nonce = texto(sobre, "n")?.to_string();
@@ -394,7 +394,7 @@ mod centro {
         match r {
             Ok(Ok(v)) => Ok(json!({ "respuesta": v })),
             Ok(Err(e)) => Err((500, e)),
-            Err(_) => Err((504, "El Mac no respondió a tiempo.".into())),
+            Err(_) => Err((504, "El computador no respondió a tiempo.".into())),
         }
     }
 
@@ -416,7 +416,7 @@ pub fn iniciar_centro(app: AppHandle) {
 #[cfg(desktop)]
 #[tauri::command]
 pub fn sinc_codigo_nuevo(nombre: String) -> Result<String, String> {
-    centro::nuevo_codigo(if nombre.trim().is_empty() { "Mac".into() } else { nombre.trim().chars().take(40).collect() })
+    centro::nuevo_codigo(if nombre.trim().is_empty() { "Computador".into() } else { nombre.trim().chars().take(40).collect() })
 }
 
 #[cfg(desktop)]
@@ -432,7 +432,7 @@ pub fn sinc_codigo_cancelar() {
 pub fn sinc_respuesta(req: u64, respuesta: Option<Value>, error: Option<String>) {
     centro::entregar(req, match (respuesta, error) {
         (Some(v), None) => Ok(v),
-        (_, e) => Err(e.unwrap_or_else(|| "Error en el Mac.".into())),
+        (_, e) => Err(e.unwrap_or_else(|| "Error en el computador.".into())),
     });
 }
 
@@ -470,7 +470,7 @@ fn buscar(segundos: u64) -> Vec<Encontrado> {
                     let id = s.get_property_val_str("id").unwrap_or_default().to_string();
                     let Some(ip) = s.get_addresses_v4().into_iter().next() else { continue };
                     if !out.iter().any(|e| e.id == id) {
-                        out.push(Encontrado { id, nombre: s.get_fullname().split("._").next().unwrap_or("Mac").to_string(), direccion: ip.to_string(), puerto: s.get_port() });
+                        out.push(Encontrado { id, nombre: s.get_fullname().split("._").next().unwrap_or("Computador").to_string(), direccion: ip.to_string(), puerto: s.get_port() });
                     }
                 }
                 Ok(_) => {}
@@ -492,18 +492,18 @@ fn post(direccion: &str, puerto: u16, ruta: &str, cuerpo: &Value) -> Result<Valu
         Ok(r) => r.into_json().map_err(|e| e.to_string()),
         Err(ureq::Error::Status(_, r)) => {
             let v: Value = r.into_json().unwrap_or(Value::Null);
-            Err(v.get("error").and_then(Value::as_str).unwrap_or("El Mac rechazó la solicitud.").to_string())
+            Err(v.get("error").and_then(Value::as_str).unwrap_or("El computador rechazó la solicitud.").to_string())
         }
         Err(_) => Err("SIN_CONEXION".into()),
     }
 }
 
-const SIN_MAC: &str = "No se encontró el Mac. Revisa que Cofre esté abierto allí y que los dos estén en la misma red Wi‑Fi.";
+const SIN_MAC: &str = "No se encontró el computador (Mac o PC). Revisa que Cofre esté abierto allí y que los dos estén en la misma red Wi‑Fi.";
 
 /// Manda un mensaje cifrado al Mac emparejado. Si la dirección cambió, lo busca con mDNS y reintenta.
 fn al_centro(app: &AppHandle, msj: Value) -> Result<Value, String> {
     let (yo, centro) = con_config(app, |c| Ok((c.id.clone(), c.centro.clone())))?;
-    let centro = centro.ok_or("Este equipo no está emparejado con el Mac.")?;
+    let centro = centro.ok_or("Este equipo no está emparejado con un computador.")?;
     let llave = llave_de(&centro.llave)?;
     let enviar = |dir: &str, puerto: u16| -> Result<Value, String> {
         let mut sobre = cifrar(&llave, &yo, msj.to_string().as_bytes())?;
@@ -545,7 +545,7 @@ pub async fn sinc_emparejar(app: AppHandle, direccion: String, puerto: u16, codi
         let (s, a) = Spake2::<Ed25519Group>::start_a(&Password::new(codigo.as_bytes()), &Identity::new(ID_EQUIPO), &Identity::new(ID_CENTRO));
         let sin = |e: String| if e == "SIN_CONEXION" { format!("No se pudo conectar con {direccion}:{puerto}.") } else { e };
         let r1 = post(&direccion, puerto, "/emparejar/1", &json!({ "id": yo, "nombre": nombre, "a": B64.encode(a) })).map_err(sin)?;
-        let b = B64.decode(r1.get("b").and_then(Value::as_str).ok_or("Respuesta inválida del Mac.")?).map_err(|e| e.to_string())?;
+        let b = B64.decode(r1.get("b").and_then(Value::as_str).ok_or("Respuesta inválida del computador.")?).map_err(|e| e.to_string())?;
         let llave: [u8; 32] = s.finish(&b).map_err(|_| "El emparejamiento falló.".to_string())?
             .try_into().map_err(|_| "El emparejamiento falló.".to_string())?;
         let mut sobre = cifrar(&llave, &yo, CONFIRMA)?;
@@ -553,7 +553,7 @@ pub async fn sinc_emparejar(app: AppHandle, direccion: String, puerto: u16, codi
         let r2 = post(&direccion, puerto, "/emparejar/2", &sobre).map_err(sin)?;
         let ok: Value = serde_json::from_slice(&descifrar(&llave, &yo, &r2)?).map_err(|e| e.to_string())?;
         let centro_id = ok.get("centro").and_then(Value::as_str).unwrap_or_default().to_string();
-        let nombre_centro = r1.get("nombre").and_then(Value::as_str).unwrap_or("Mac").to_string();
+        let nombre_centro = r1.get("nombre").and_then(Value::as_str).unwrap_or("Computador").to_string();
         con_config(&app, |c| {
             c.centro = Some(Centro { id: centro_id, nombre: nombre_centro.clone(), direccion: direccion.clone(), puerto, llave: B64.encode(llave) });
             Ok(())
@@ -569,7 +569,7 @@ pub async fn sinc_emparejar(app: AppHandle, direccion: String, puerto: u16, codi
 pub async fn sinc_enviar(app: AppHandle, solicitud: Value) -> Result<Value, String> {
     tauri::async_runtime::spawn_blocking(move || {
         let r = al_centro(&app, json!({ "tipo": "sinc", "solicitud": solicitud }))?;
-        r.get("respuesta").cloned().ok_or_else(|| "Respuesta inválida del Mac.".to_string())
+        r.get("respuesta").cloned().ok_or_else(|| "Respuesta inválida del computador.".to_string())
     })
     .await
     .map_err(|e| e.to_string())?

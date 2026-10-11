@@ -3,13 +3,13 @@
   import Icono from "$lib/Icono.svelte";
   import { rutasMas } from "$lib/navegacion";
   import { avisos } from "$lib/alertas/estado-alertas.svelte";
-  import { sinc, haceCuanto } from "$lib/sinc/estado-sinc.svelte";
+  import { sinc, haceCuanto, centro } from "$lib/sinc/estado-sinc.svelte";
 
   const sincTitulo = $derived(
-    !sinc.emparejado ? "Sincronizar con el Mac"
+    !sinc.emparejado ? `Sincronizar con el ${centro()}`
     : sinc.enCurso ? "Sincronizando…"
     : sinc.error ? "No se pudo sincronizar"
-    : `Sincronizado con ${sinc.mac ?? "el Mac"}`,
+    : `Sincronizado con ${sinc.mac ?? `el ${centro()}`}`,
   );
   const sincDetalle = $derived(
     !sinc.emparejado ? "Empareja este celular para ver tus datos"
@@ -44,7 +44,7 @@
   {/each}
 </nav>
 
-<p class="caption nota">Importar extractos, categorías, reglas, simulador y Excel están en el Mac y en la tablet.</p>
+<p class="caption nota">Importar extractos, categorías, reglas, simulador y Excel están en el computador y en la tablet.</p>
 
 <style>
   .sinc { border-radius: 20px; padding: 12px 16px; display: flex; align-items: center; gap: 12px; text-decoration: none; color: var(--ink); }

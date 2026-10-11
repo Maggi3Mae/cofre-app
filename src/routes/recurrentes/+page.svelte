@@ -184,7 +184,7 @@
   {:else}
     <section class="cf-glass cf-card vacio">
       <span class="cf-tile cf-tile--brand"><Icono nombre="repetir" /></span>
-      <p>Programa en el Mac lo que pagas o recibes siempre (arriendo, servicios, nómina): llega aquí al sincronizar.</p>
+      <p>Programa en el computador lo que pagas o recibes siempre (arriendo, servicios, nómina): llega aquí al sincronizar.</p>
     </section>
   {/if}
 {:else}
@@ -303,7 +303,7 @@
   <section class="cf-glass cf-card vacio">
     <span class="cf-tile cf-tile--brand"><Icono nombre="repetir" /></span>
     <p>Programa lo que pagas o recibes siempre (arriendo, servicios, nómina) y Cofre lo registra por ti o te pide confirmarlo en su fecha.</p>
-    {#if pantalla.celular}<p class="caption">Créalos en el Mac: llegan aquí al sincronizar.</p>
+    {#if pantalla.celular}<p class="caption">Créalos en el computador: llegan aquí al sincronizar.</p>
     {:else}
       <p class="caption">También puedes abrir un movimiento y tocar «Hacer recurrente».</p>
       <button class="cf-btn cf-btn--primary" onclick={nuevo} disabled={!activas.length}><Icono nombre="mas" />Nuevo recurrente</button>

@@ -4,7 +4,7 @@
 import { invoke } from "@tauri-apps/api/core";
 import { isPermissionGranted, requestPermission, sendNotification } from "@tauri-apps/plugin-notification";
 import { correoHtml, correoTexto } from "./correo";
-import { esEscritorio, esAndroid } from "$lib/plataforma";
+import { esEscritorio, esAndroid, esMac } from "$lib/plataforma";
 import { notificarAndroid, programarAvisos, tipoDeAlerta } from "./android";
 import { revisarTodo, generarAutomaticas, porConfirmar, alCambiarDatos, leerCorreo, actualizarTrmSiToca, type Alerta, type Nivel } from "$lib/datos";
 import { pesos, hoy } from "$lib/formato";
@@ -76,7 +76,7 @@ export async function notificarSistema(titulo: string, cuerpo: string, siempre =
   try {
     let ok = await isPermissionGranted();
     if (!ok) ok = (await requestPermission()) === "granted";
-    if (ok) sendNotification({ title: titulo, body: cuerpo, sound: "Sosumi" }); // sonido del sistema de macOS
+    if (ok) sendNotification({ title: titulo, body: cuerpo, ...(esMac ? { sound: "Sosumi" } : {}) }); // sonido del sistema de macOS
     return ok;
   } catch {
     return false; // sin permiso o fuera de Tauri: queda el toast

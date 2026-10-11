@@ -1,8 +1,8 @@
-// Sincronización automática del celular / tablet con el Mac (nada en segundo plano):
+// Sincronización automática del celular / tablet con el computador (Mac o PC) (nada en segundo plano):
 // al abrir, 5 s después de cada cambio, cada 5 minutos con la app a la vista y al volver a ella.
 // En automático los errores no molestan: quedan en `sinc.error` para Ajustes.
 import { alCambiarDatos } from "$lib/datos/cambios";
-import { esEscritorio } from "$lib/plataforma";
+import { esEscritorio, tipoCentro } from "$lib/plataforma";
 import { estadoSinc, sincronizarAhora, ultimaSincronizacion } from "./puente";
 
 export const sinc = $state<{ emparejado: boolean; mac: string | null; enCurso: boolean; ultima: string | null; error: string | null }>({
@@ -16,6 +16,11 @@ const PAUSA_SIN_MAC = 2 * 60_000; // si el Mac no está, los cambios no reintent
 let pausaHasta = 0;
 
 /** Sincroniza ahora. `manual`: lanza el error para mostrarlo; si no, solo lo guarda. */
+/** «Mac», «PC» o «computador» (sin emparejar): el centro de la sincronización, para los textos de Android. */
+export function centro(): string {
+  return tipoCentro(sinc.mac);
+}
+
 export async function sincronizar(manual = false): Promise<{ recibidas: number; fotos: number } | null> {
   if (sinc.enCurso) return null;
   sinc.enCurso = true;

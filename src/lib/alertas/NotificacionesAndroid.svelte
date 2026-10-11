@@ -51,7 +51,7 @@
 
   <p class="ayuda">
     Cofre no corre en segundo plano: los avisos de presupuestos salen mientras la usas; los de CDT y «Me deben» quedan
-    agendados y llegan a las 9 a. m. aunque esté cerrada{programadas != null ? ` (${programadas} agendados)` : ""}. Los correos salen solo del Mac.
+    agendados y llegan a las 9 a. m. aunque esté cerrada{programadas != null ? ` (${programadas} agendados)` : ""}. Los correos salen solo del computador.
   </p>
 
   <div><button class="cf-btn cf-btn--secondary" onclick={probar} disabled={!permiso}>Enviar notificación de prueba</button></div>

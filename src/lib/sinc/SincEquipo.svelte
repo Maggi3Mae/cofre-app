@@ -4,7 +4,7 @@
   import Icono from "$lib/Icono.svelte";
   import { mostrarAviso } from "$lib/alertas/estado-alertas.svelte";
   import { buscarMac, emparejar, estadoSinc, olvidarMac, primeraBorraDatos, type EstadoSinc, type MacEncontrado } from "./puente";
-  import { sinc, sincronizar, refrescarEstado, haceCuanto } from "./estado-sinc.svelte";
+  import { sinc, sincronizar, refrescarEstado, haceCuanto, centro } from "./estado-sinc.svelte";
 
   /** Pantalla propia del celular (/sincronizar): pasos 1 y 2 del lienzo; si no, tarjeta de Ajustes. */
   let { pantalla = false }: { pantalla?: boolean } = $props();
@@ -65,7 +65,7 @@
       await cargar();
       codigo = ""; confirmarReemplazo = false;
       await sincronizar(true);
-      mostrarAviso({ titulo: `Emparejado con ${mac}`, cuerpo: "Ya tienes aquí los datos del Mac.", nivel: "ok" });
+      mostrarAviso({ titulo: `Emparejado con ${mac}`, cuerpo: `Ya tienes aquí los datos del ${centro()}.`, nivel: "ok" });
     } catch (e) {
       error = String(e);
     } finally {
@@ -91,10 +91,10 @@
 </script>
 
 {#if pantalla && !estado?.centro}
-  <p class="intro">En el Mac abre Cofre → Ajustes → Equipos → «Emparejar un equipo». Los dos en la misma red Wi‑Fi.</p>
+  <p class="intro">En tu computador (Mac o PC) abre Cofre → Ajustes → Equipos → «Emparejar un equipo». Los dos en la misma red Wi‑Fi.</p>
   <form class="pasos-m" onsubmit={enviar}>
     <section class="cf-glass paso-m">
-      <div class="paso-cab"><span class="paso">1</span><b>Elige tu Mac</b></div>
+      <div class="paso-cab"><span class="paso">1</span><b>Elige tu {centro()}</b></div>
       {#if modo === "buscar"}
         {#if buscando}
           <span class="ayuda">Buscando en la red…</span>
@@ -107,11 +107,11 @@
             </button>
           {/each}
         {:else if encontrados}
-          <span class="ayuda">No se encontró. Revisa que Cofre esté abierto en el Mac, o escribe la dirección que aparece en Ajustes → Equipos.</span>
+          <span class="ayuda">No se encontró. Revisa que Cofre esté abierto en el {centro()}, o escribe la dirección que aparece en Ajustes → Equipos.</span>
         {/if}
       {:else}
         <div class="dir">
-          <span class="cf-field"><input bind:value={direccion} inputmode="decimal" placeholder="192.168.1.20" aria-label="Dirección del Mac" /></span>
+          <span class="cf-field"><input bind:value={direccion} inputmode="decimal" placeholder="192.168.1.20" aria-label="Dirección del {centro()}" /></span>
           <span class="cf-field puerto"><input bind:value={puerto} inputmode="numeric" maxlength="5" aria-label="Puerto" /></span>
         </div>
       {/if}
@@ -124,7 +124,7 @@
     </section>
 
     <section class="cf-glass paso-m">
-      <div class="paso-cab"><span class="paso">2</span><b>Escribe el código del Mac</b></div>
+      <div class="paso-cab"><span class="paso">2</span><b>Escribe el código del {centro()}</b></div>
       <label class="digitos">
         <input bind:value={codigo} oninput={() => (codigo = codigo.replace(/\D/g, "").slice(0, 6))}
           onfocus={() => (codigoFoco = true)} onblur={() => (codigoFoco = false)}
@@ -142,7 +142,7 @@
     {#if confirmarReemplazo}
       <div class="confirmar" role="alertdialog" aria-label="Reemplazar datos">
         <span class="etiqueta">Este equipo ya tiene datos</span>
-        <p class="ayuda">Al emparejar se reemplazan por los del Mac (lo que anotaste solo aquí se borra). ¿Seguir?</p>
+        <p class="ayuda">Al emparejar se reemplazan por los del {centro()} (lo que anotaste solo aquí se borra). ¿Seguir?</p>
         <div class="fila">
           <button type="button" class="cf-btn cf-btn--ghost" onclick={() => (confirmarReemplazo = false)}>Cancelar</button>
           <button type="submit" class="cf-btn cf-btn--primary" disabled={trabajando}>Sí, reemplazar</button>
@@ -154,11 +154,11 @@
       </button>
     {/if}
     {#if error}<p class="error-form" role="alert">{error}</p>{/if}
-    <p class="ayuda">Al emparejar, este equipo toma todos los datos del Mac. Todo viaja cifrado y solo entre tus equipos.</p>
+    <p class="ayuda">Al emparejar, este equipo toma todos los datos del {centro()}. Todo viaja cifrado y solo entre tus equipos.</p>
   </form>
 {:else}
 <section id="sinc" class="cf-glass cf-card seccion" aria-labelledby="t-sinc">
-  <h2 id="t-sinc" class="cf-card-title">{pantalla ? "Estado" : "Sincronizar con el Mac"}</h2>
+  <h2 id="t-sinc" class="cf-card-title">{pantalla ? "Estado" : `Sincronizar con el ${centro()}`}</h2>
 
   {#if estado?.centro}
     <div class="bloque">
@@ -172,7 +172,7 @@
         </div>
       </div>
       {#if sinc.error && !sinc.enCurso}<p class="error-form" role="alert">{sinc.error}</p>{/if}
-      <p class="ayuda">Se sincroniza sola al abrir Cofre, después de cada cambio y cada 5 minutos mientras la usas. Necesita que Cofre esté abierto en el Mac y la misma red Wi‑Fi.</p>
+      <p class="ayuda">Se sincroniza sola al abrir Cofre, después de cada cambio y cada 5 minutos mientras la usas. Necesita que Cofre esté abierto en el {centro()} y la misma red Wi‑Fi.</p>
       <div class="fila">
         <button class="cf-btn cf-btn--primary" onclick={ahoraSi} disabled={sinc.enCurso}>Sincronizar ahora</button>
         {#if desemparejando}
@@ -186,7 +186,7 @@
     </div>
   {:else}
     <p class="intro">
-      En el Mac abre Cofre → Ajustes → Equipos → «Emparejar un equipo» y escribe aquí el código que aparece.
+      En tu computador abre Cofre → Ajustes → Equipos → «Emparejar un equipo» y escribe aquí el código que aparece.
       Los dos deben estar en la misma red Wi‑Fi.
     </p>
     <form class="pasos" onsubmit={enviar}>
@@ -196,7 +196,7 @@
       </label>
 
       <div class="campo">
-        <span class="etiqueta">Tu Mac</span>
+        <span class="etiqueta">Tu {centro()}</span>
         <div class="cf-seg">
           <button type="button" aria-pressed={modo === "buscar"} onclick={() => (modo = "buscar")}>Buscar</button>
           <button type="button" aria-pressed={modo === "manual"} onclick={() => (modo = "manual")}>Escribir la dirección</button>
@@ -213,26 +213,26 @@
               {/each}
             </div>
           {:else if encontrados}
-            <span class="ayuda">No se encontró. Revisa que Cofre esté abierto en el Mac, o escribe la dirección que aparece en Ajustes → Equipos.</span>
+            <span class="ayuda">No se encontró. Revisa que Cofre esté abierto en el {centro()}, o escribe la dirección que aparece en Ajustes → Equipos.</span>
           {/if}
           {#if !buscando}<div><button type="button" class="cf-btn cf-btn--ghost" onclick={buscar}>Buscar de nuevo</button></div>{/if}
         {:else}
           <div class="dir">
-            <span class="cf-field"><input bind:value={direccion} inputmode="decimal" placeholder="192.168.1.20" aria-label="Dirección del Mac" /></span>
+            <span class="cf-field"><input bind:value={direccion} inputmode="decimal" placeholder="192.168.1.20" aria-label="Dirección del {centro()}" /></span>
             <span class="cf-field puerto"><input bind:value={puerto} inputmode="numeric" maxlength="5" aria-label="Puerto" /></span>
           </div>
         {/if}
       </div>
 
       <label class="campo">
-        <span class="etiqueta">Código del Mac</span>
+        <span class="etiqueta">Código del {centro()}</span>
         <span class="cf-field"><input class="codigo" bind:value={codigo} inputmode="numeric" autocomplete="one-time-code" maxlength="7" placeholder="000 000" /></span>
       </label>
 
       {#if confirmarReemplazo}
         <div class="confirmar" role="alertdialog" aria-label="Reemplazar datos">
           <span class="etiqueta">Este equipo ya tiene datos</span>
-          <p class="ayuda">Al emparejar se reemplazan por los del Mac (lo que anotaste solo aquí se borra). ¿Seguir?</p>
+          <p class="ayuda">Al emparejar se reemplazan por los del {centro()} (lo que anotaste solo aquí se borra). ¿Seguir?</p>
           <div class="fila">
             <button type="button" class="cf-btn cf-btn--ghost" onclick={() => (confirmarReemplazo = false)}>Cancelar</button>
             <button type="submit" class="cf-btn cf-btn--primary" disabled={trabajando}>Sí, reemplazar</button>

@@ -2,10 +2,11 @@
   // Celular y tablet: «Sincronizar con el Mac» (emparejar en 2 pasos, o estado y «Sincronizar ahora»).
   import Icono from "$lib/Icono.svelte";
   import SincEquipo from "$lib/sinc/SincEquipo.svelte";
+  import { centro } from "$lib/sinc/estado-sinc.svelte";
 </script>
 
 <a href="/mas" class="volver"><Icono nombre="siguiente" clase="atras" />Más</a>
-<h1 class="titulo-pantalla">Sincronizar con el Mac</h1>
+<h1 class="titulo-pantalla">Sincronizar con el {centro()}</h1>
 <SincEquipo pantalla />
 
 <style>

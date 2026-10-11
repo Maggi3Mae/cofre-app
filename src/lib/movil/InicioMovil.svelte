@@ -12,7 +12,7 @@
     type Patrimonio, type Totales, type Transaccion, type Presupuesto, type Persona,
   } from "$lib/datos";
   import { hoy } from "$lib/formato";
-  import { sinc } from "$lib/sinc/estado-sinc.svelte";
+  import { sinc, centro } from "$lib/sinc/estado-sinc.svelte";
 
   const OCULTO = "$ ••••••";
   const mesNombre = new Intl.DateTimeFormat("es-CO", { month: "long" }).format(new Date());
@@ -61,8 +61,8 @@
   const chipSinc = $derived(
     !sinc.emparejado ? null
     : sinc.enCurso ? { texto: "Sincronizando…", clase: "cf-chip--brand" }
-    : sinc.error ? { texto: "Sin conexión con el Mac", clase: "cf-chip--warn-80" }
-    : { texto: "Al día con el Mac", clase: "cf-chip--income" },
+    : sinc.error ? { texto: `Sin conexión con el ${centro()}`, clase: "cf-chip--warn-80" }
+    : { texto: `Al día con el ${centro()}`, clase: "cf-chip--income" },
   );
 </script>
 

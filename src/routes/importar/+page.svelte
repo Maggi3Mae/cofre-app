@@ -17,7 +17,7 @@
   import { todosLosFormatos, detectar, formatoPorId } from "$lib/importar/bancos";
   import AsistentePlantilla from "$lib/importar/AsistentePlantilla.svelte";
   import { clavesGuardadas, guardarClave } from "$lib/importar/claves";
-  import { esEscritorio } from "$lib/plataforma";
+  import { esEscritorio, llavero } from "$lib/plataforma";
   import { anonimizar } from "$lib/importar/anonimizar";
   import { fechaCorta } from "$lib/periodo";
   import { pesos } from "$lib/formato";
@@ -312,8 +312,8 @@
       if (recordar) {
         if (formato) {
           await guardarClave(formato.id, claveEscrita)
-            .then(() => (aviso = `Clave guardada en el Llavero para ${formato!.nombre}.`))
-            .catch(() => (aviso = "No se pudo guardar la clave en el Llavero; te la pediremos la próxima vez."));
+            .then(() => (aviso = `Clave guardada en el ${llavero} para ${formato!.nombre}.`))
+            .catch(() => (aviso = `No se pudo guardar la clave en el ${llavero}; te la pediremos la próxima vez.`));
         } else aviso = "No se reconoció el banco, así que la clave no se guardó.";
       }
     } catch (e) {
@@ -429,7 +429,7 @@
       {#if esEscritorio}
         <label class="interruptor">
           <input type="checkbox" bind:checked={recordar} />
-          <span>Recordar para este banco <small>Se guarda en el Llavero de macOS, no en Cofre.</small></span>
+          <span>Recordar para este banco <small>Se guarda en el {llavero}, no en Cofre.</small></span>
         </label>
       {/if}
       <div><button class="cf-btn cf-btn--primary" type="submit" disabled={!clave}>Abrir extracto</button></div>

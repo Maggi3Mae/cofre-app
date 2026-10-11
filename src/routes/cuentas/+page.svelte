@@ -137,7 +137,7 @@
     <span class="cf-tile cf-tile--brand"><Icono nombre="cuentas" /></span>
     <h2 class="cf-card-title">Aún no tienes cuentas</h2>
     {#if pantalla.celular}
-      <p class="cf-muted">Crea tus cuentas en el Mac: llegan aquí al sincronizar.</p>
+      <p class="cf-muted">Crea tus cuentas en el computador: llegan aquí al sincronizar.</p>
     {:else}
     <p class="cf-muted">Crea tu cuenta de ahorros, tus tarjetas y tu efectivo para empezar a registrar movimientos.</p>
     <button class="cf-btn cf-btn--primary" onclick={nueva}><Icono nombre="mas" />Crear la primera</button>

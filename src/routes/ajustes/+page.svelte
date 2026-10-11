@@ -5,7 +5,7 @@
     leerNombre, guardarAjuste, leerTrm, guardarTrmManual, leerTrmInfo, actualizarTrm, leerTrmAuto, guardarTrmAuto, type TrmInfo, leerCorreo, guardarCorreo, CORREO_VACIO, type AjustesCorreo,
   } from "$lib/datos";
   import { guardarClave, borrarClave } from "$lib/importar/claves";
-  import { esEscritorio } from "$lib/plataforma";
+  import { esEscritorio, esWindows, compu, llavero } from "$lib/plataforma";
   import EquiposMac from "$lib/sinc/EquiposMac.svelte";
   import CopiasMac from "$lib/copias/CopiasMac.svelte";
   import DatosPago from "$lib/medeben/DatosPago.svelte";
@@ -14,7 +14,7 @@
   import { pantalla } from "$lib/pantalla.svelte";
   import { tema, cambiarTema } from "$lib/tema.svelte";
   import { leerPatrimonioOculto, guardarPatrimonioOculto } from "$lib/datos";
-  import { sinc, haceCuanto } from "$lib/sinc/estado-sinc.svelte";
+  import { sinc, haceCuanto, centro } from "$lib/sinc/estado-sinc.svelte";
 
   // Celular: ojito del patrimonio (se guarda al tocarlo).
   let oculto = $state(false);
@@ -167,7 +167,7 @@
     hayClave = false;
     correo.activo = false;
     await guardarCorreo(correo);
-    avisoCorreo = "Clave borrada del Llavero y correo apagado.";
+    avisoCorreo = `Clave borrada del ${llavero} y correo apagado.`;
   }
 
   async function probarCorreo() {
@@ -193,7 +193,7 @@
     setTimeout(async () => {
       const ok = await notificarSistema("Prueba de Cofre", "Así se ven las alertas.", true);
       avisoNotif = ok ? "Notificación enviada. Si no la viste, revisa Ajustes del Sistema → Notificaciones → Cofre."
-        : "macOS no dio permiso para notificaciones. Actívalo en Ajustes del Sistema → Notificaciones → Cofre.";
+        : esWindows ? "Windows no dio permiso para notificaciones. Actívalo en Configuración → Sistema → Notificaciones → Cofre." : "macOS no dio permiso para notificaciones. Actívalo en Ajustes del Sistema → Notificaciones → Cofre.";
     }, 5000);
   }
 </script>
@@ -219,7 +219,7 @@
   <label class="campo">
     <span class="etiqueta">Tu nombre</span>
     <span class="cf-field"><input bind:value={nombre} placeholder="Para el saludo de Inicio" /></span>
-    <span class="ayuda">Se comparte con el Mac al sincronizar.</span>
+    <span class="ayuda">Se comparte con el {centro()} al sincronizar.</span>
   </label>
   <div class="acciones">
     {#if avisoGeneral}<span class="caption" role="status">{avisoGeneral}</span>{/if}
@@ -231,8 +231,8 @@
 
 <a href="/sincronizar" class="cf-glass sinc-m">
   <span class="cf-tile cf-tile--brand"><Icono nombre="sincronizar" /></span>
-  <span class="sinc-txt"><b>Sincronizar con el Mac</b>
-    <small>{sinc.emparejado ? `Con ${sinc.mac ?? "el Mac"} · ${haceCuanto(sinc.ultima)}` : "Sin emparejar"}</small></span>
+  <span class="sinc-txt"><b>Sincronizar con el {centro()}</b>
+    <small>{sinc.emparejado ? `Con ${sinc.mac ?? `el ${centro()}`} · ${haceCuanto(sinc.ultima)}` : "Sin emparejar"}</small></span>
   <Icono nombre="siguiente" clase="chev-m" />
 </a>
 {:else}
@@ -300,7 +300,7 @@
       <div class="texto">
         <b>Revisión diaria</b>
         <span class="caption">
-          {agenteHora ? `Activa: todos los días a las ${agenteHora} y al iniciar sesión.` : "Apagada: solo se revisa cuando abres la app."}
+          {agenteHora ? esWindows ? `Activa: todos los días a las ${agenteHora} (si el PC estaba apagado, apenas lo enciendas).` : `Activa: todos los días a las ${agenteHora} y al iniciar sesión.` : "Apagada: solo se revisa cuando abres la app."}
         </span>
       </div>
     </div>
@@ -324,7 +324,7 @@
     <div class="bloque-cab">
       <span class="cf-tile cf-tile--brand"><Icono nombre="campana" /></span>
       <div class="texto">
-        <b>Notificaciones de macOS</b>
+        <b>Notificaciones del sistema</b>
         <span class="caption">Salen cuando Cofre no está a la vista.</span>
       </div>
     </div>
@@ -364,17 +364,17 @@
     <label class="campo">
       <span class="etiqueta">Clave</span>
       <span class="cf-field"><input bind:value={clave} type="password" autocomplete="new-password"
-        placeholder={hayClave ? "•••••••• (guardada en el Llavero)" : "Contraseña de aplicación"} /></span>
+        placeholder={hayClave ? `•••••••• (guardada en el ${llavero})` : "Contraseña de aplicación"} /></span>
       <span class="ayuda">
         Con Gmail usa una «contraseña de aplicación» (Cuenta de Google → Seguridad → Contraseñas de aplicaciones), no tu clave normal.
-        Se guarda en el Llavero de macOS, nunca en la base de datos.
+        Se guarda en el {llavero}, nunca en la base de datos.
         {#if hayClave}<button type="button" class="enlace" onclick={quitarClave}>Borrar clave</button>{/if}
       </span>
     </label>
     <div class="sub-bloque">
       <label class="interruptor">
         <input type="checkbox" bind:checked={correo.cierre} disabled={!correo.activo} />
-        <span><b>Cierre del mes</b><br /><span class="ayuda">El día 1 (o en los primeros 5 días si el Mac estuvo apagado), un resumen del mes anterior:
+        <span><b>Cierre del mes</b><br /><span class="ayuda">El día 1 (o en los primeros 5 días si el {compu} estuvo apagado), un resumen del mes anterior:
           entradas y salidas comparadas, categorías, presupuestos cumplidos y recurrentes. Si ocultas el patrimonio, no va en el correo.</span></span>
       </label>
       <button type="button" class="cf-btn cf-btn--ghost" onclick={probarCierre}
