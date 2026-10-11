@@ -1,0 +1,3 @@
+User-agent: *
+Allow: /
+Sitemap: https://maggi3mae.github.io/cofre-app/sitemap.xml

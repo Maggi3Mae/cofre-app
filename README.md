@@ -4,6 +4,8 @@
 
 Funciona en Mac, Windows (en pruebas) y Android (celular y tablet).
 
+**Página:** https://maggi3mae.github.io/cofre-app/
+
 ## Qué hace
 
 - **Panorama general:** patrimonio, lo que entró y salió en el mes, evolución, categorías y comercios donde más gastas.
