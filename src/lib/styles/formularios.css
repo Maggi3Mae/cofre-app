@@ -1,0 +1,20 @@
+/* Formularios de la app, armados con piezas del sistema Cofre (cf-field, cf-seg). */
+.campo { display: flex; flex-direction: column; gap: 6px; }
+.campo > .etiqueta { font-size: 13px; line-height: 18px; font-weight: 600; color: var(--ink); }
+.campo > .ayuda { font-size: 12px; line-height: 16px; color: var(--ink-2); }
+.campo .cf-field select { flex: 1; min-width: 0; border: 0; outline: 0; background: transparent; font: 400 14px/20px var(--font-sans); color: var(--ink); }
+.campo .cf-field .sufijo { font-size: 13px; color: var(--ink-2); }
+.campo .cf-seg { display: flex; }
+.campo .cf-seg button { flex: 1; }
+.fila-campos { display: grid; grid-template-columns: repeat(auto-fit, minmax(120px, 1fr)); gap: var(--space-3); }
+.grupo-form { display: flex; flex-direction: column; gap: var(--space-4); padding-top: var(--space-4); border-top: 1px solid var(--line); }
+.interruptor { display: flex; align-items: flex-start; gap: var(--space-3); cursor: pointer; font-size: 14px; line-height: 20px; }
+.interruptor input { appearance: none; flex: none; width: 40px; height: 24px; margin: 0; border-radius: var(--r-full); background: var(--track); position: relative; cursor: pointer; transition: background .15s; }
+.interruptor input::after { content: ""; position: absolute; top: 3px; left: 3px; width: 18px; height: 18px; border-radius: var(--r-full); background: var(--mist-0); box-shadow: var(--shadow-1); transition: transform .15s; }
+.interruptor input:checked { background: var(--primary); }
+.interruptor input:checked::after { transform: translateX(16px); }
+.interruptor input:focus-visible { outline: 2px solid var(--primary); outline-offset: 2px; }
+.interruptor small { display: block; color: var(--ink-2); font-size: 12px; line-height: 16px; }
+.error-form { padding: 10px 14px; border-radius: var(--r-md); background: var(--expense-soft); color: var(--expense); font-size: 13px; line-height: 18px; font-weight: 500; }
+.cf-btn--peligro { color: var(--expense); background: transparent; }
+.cf-btn:disabled { opacity: .5; cursor: not-allowed; }

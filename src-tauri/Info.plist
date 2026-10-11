@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<!-- Se une al Info.plist de la app al empaquetar (macOS). -->
+<plist version="1.0">
+<dict>
+  <key>NSLocalNetworkUsageDescription</key>
+  <string>Cofre usa la red local para sincronizar con tu celular y tu tablet. Tus datos no salen de tu casa.</string>
+  <key>NSBonjourServices</key>
+  <array>
+    <string>_cofre._tcp</string>
+  </array>
+</dict>
+</plist>

@@ -1,0 +1,68 @@
+[package]
+name = "cofre"
+version = "0.1.0"
+description = "Cofre — finanzas personales locales"
+license = "GPL-3.0-or-later"
+authors = ["Humano"]
+edition = "2021"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[lib]
+# The `_lib` suffix may seem redundant but it is necessary
+# to make the lib name unique and wouldn't conflict with the bin name.
+# This seems to be only an issue on Windows, see https://github.com/rust-lang/cargo/issues/8519
+name = "cofre_lib"
+crate-type = ["staticlib", "cdylib", "rlib"]
+
+[build-dependencies]
+tauri-build = { version = "2", features = [] }
+
+[dependencies]
+tauri = { version = "2", features = [] }
+tauri-plugin-sql = { version = "2", features = ["sqlite"] }
+tauri-plugin-notification = "2"
+tauri-plugin-dialog = "2"
+serde = { version = "1", features = ["derive"] }
+serde_json = "1"
+# Leer extractos en Excel/CSV (también en la tablet).
+calamine = { version = "0.30", features = ["dates"] }
+# Sincronización por Wi‑Fi (Fase 5B): HTTP local sin TLS (el contenido va cifrado), mDNS,
+# emparejamiento con código (SPAKE2) y cifrado de cada mensaje (ChaCha20‑Poly1305).
+ureq = { version = "2", default-features = false, features = ["json"] }
+mdns-sd = "0.21"
+if-addrs = "0.15"
+spake2 = "0.4"
+chacha20poly1305 = "0.10"
+base64 = "0.22"
+getrandom = "0.2"
+
+# Solo Android: candado de multicast para que mDNS reciba respuestas.
+[target.'cfg(target_os = "android")'.dependencies]
+jni = "0.21"
+ndk-context = "0.1"
+
+# Solo escritorio (Mac): en Android no hay Llavero ni LaunchAgent, y native-tls pediría OpenSSL.
+[target.'cfg(not(any(target_os = "android", target_os = "ios")))'.dependencies]
+# Correo opcional de alertas (SMTP). Solo se usa si se activa en Ajustes.
+lettre = { version = "0.11", default-features = false, features = ["builder", "hostname", "smtp-transport", "native-tls"] }
+# TRM oficial desde datos.gov.co (única consulta a internet; solo si se pide en Ajustes).
+ureq = { version = "2", default-features = false, features = ["native-tls", "json"] }
+native-tls = "0.2"
+# Exportar Reportes a Excel.
+rust_xlsxwriter = "0.90"
+# Llavero del sistema (macOS Keychain / Windows Credential Manager) para las claves de extractos.
+keyring = { version = "3", features = ["apple-native", "windows-native"] }
+# Servidor de sincronización del Mac (el centro).
+tiny_http = "0.12"
+# Copias de seguridad: llave a partir de la contraseña (Argon2id).
+argon2 = "0.5"
+
+
+# Read the optimization guideline for more details: https://tauri.app/concept/size/#cargo-configuration
+[profile.release]
+codegen-units = 1
+lto = true
+opt-level = 3
+panic = "abort"
+strip = true

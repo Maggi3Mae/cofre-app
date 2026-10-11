@@ -1,0 +1,45 @@
+{
+  "name": "cofre",
+  "version": "0.1.0",
+  "description": "Cofre — finanzas personales, todo local",
+  "type": "module",
+  "scripts": {
+    "predev": "node scripts/copiar-ocr.mjs",
+    "prebuild": "node scripts/copiar-ocr.mjs",
+    "dev": "vite dev",
+    "build": "vite build",
+    "preview": "vite preview",
+    "prepare": "svelte-kit sync || echo ''",
+    "check": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json",
+    "check:watch": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json --watch",
+    "tauri": "tauri",
+    "prueba:sinc": "node --experimental-strip-types --no-warnings pruebas/sinc.prueba.ts",
+    "prueba:recurrentes": "node --experimental-strip-types --no-warnings pruebas/recurrentes.prueba.ts"
+  },
+  "license": "GPL-3.0-or-later",
+  "dependencies": {
+    "@fontsource-variable/bricolage-grotesque": "^5.3.0",
+    "@fontsource-variable/geist": "^5.3.0",
+    "@fontsource-variable/geist-mono": "^5.3.0",
+    "@jsquash/webp": "^1.5.0",
+    "@tauri-apps/api": "^2",
+    "@tauri-apps/plugin-dialog": "^2.8.1",
+    "@tauri-apps/plugin-notification": "^2.5.1",
+    "@tauri-apps/plugin-sql": "^2.5.0",
+    "@tesseract.js-data/spa": "^1.0.0",
+    "echarts": "^5.6.0",
+    "jsqr": "^1.4.0",
+    "pdfjs-dist": "^6.4.299",
+    "tesseract.js": "^7.0.0"
+  },
+  "devDependencies": {
+    "@sveltejs/adapter-static": "^3.0.10",
+    "@sveltejs/kit": "^2.65.1",
+    "@sveltejs/vite-plugin-svelte": "^7.1.2",
+    "@tauri-apps/cli": "^2",
+    "svelte": "^5.56.3",
+    "svelte-check": "^4.6.0",
+    "typescript": "~6.0.3",
+    "vite": "^8.0.16"
+  }
+}

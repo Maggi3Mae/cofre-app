@@ -1,0 +1,117 @@
+/* Layout de la app. Los componentes viven en bundle.css (prefijo cf-). */
+html, body { margin: 0; height: 100%; }
+/* Fondo en su propia capa fija: con «background-attachment: fixed» WebKit repinta toda la página
+   (y cada vidrio desenfocado) en cada paso del scroll. */
+body { position: relative; }
+body::before { content: ""; position: fixed; inset: 0; z-index: -1; background: var(--grad-aurora); pointer-events: none; transform: translateZ(0); }
+h1, h2, h3, p { margin: 0; }
+.app { display: grid; grid-template-columns: 248px minmax(0, 1fr); gap: var(--space-5); min-height: 100vh; padding: var(--space-5); }
+.lateral { position: sticky; top: var(--space-5); height: calc(100vh - 2 * var(--space-5)); border-radius: var(--r-xl); padding: var(--space-5) var(--space-3); display: flex; flex-direction: column; gap: var(--space-6); }
+.logo { display: flex; align-items: center; gap: var(--space-3); padding: 0 var(--space-2); font: 700 22px/1 var(--font-display); letter-spacing: -.02em; }
+.logo-tesela { width: 40px; height: 40px; border-radius: var(--r-md); background: var(--grad-brand); box-shadow: var(--glow-brand); color: #fff; display: grid; place-items: center; }
+.lateral .cf-nav { flex: 1; overflow-y: auto; }
+.lateral .cf-seg { align-self: stretch; }
+.lateral .cf-seg button { flex: 1; display: inline-flex; align-items: center; justify-content: center; gap: 6px; }
+.lateral .cf-seg .cf-icon { width: 16px; height: 16px; }
+.contenido { display: flex; flex-direction: column; gap: var(--space-5); padding: var(--space-3) var(--space-3) var(--space-8) 0; }
+.titulo-pantalla { font: 650 30px/36px var(--font-display); letter-spacing: -.02em; }
+.encabezado { display: flex; align-items: center; justify-content: space-between; gap: var(--space-4); flex-wrap: wrap; }
+.encabezado-acciones { display: flex; align-items: center; gap: var(--space-3); }
+/* Tablet vertical: si los botones no caben, bajan a la línea siguiente sin salirse. */
+html.tablet.vertical .encabezado-acciones { flex-wrap: wrap; justify-content: flex-end; }
+.caption { font-size: 12px; line-height: 16px; font-weight: 500; color: var(--ink-2); }
+.contenido > .cf-seg { align-self: flex-start; }
+a.cf-btn { text-decoration: none; }
+
+/* Celular (pantalla.svelte.ts): sin menú lateral; barra inferior flotante y área segura.
+   En columnas con scroll, los bloques no se aplastan (flex-shrink: 0). */
+/* Nada puede ser más ancho que la pantalla: si algo se sale, el WebView desplaza toda la página de lado. */
+html.celular, html.celular body { overflow-x: hidden; max-width: 100%; }
+html.celular, html.tablet { touch-action: manipulation; } /* sin zoom por doble toque; el scroll sigue igual */
+.app-movil {
+  min-height: 100vh; box-sizing: border-box; width: 100%; overflow-x: clip;
+  padding: calc(max(env(safe-area-inset-top, 0px), var(--area-arriba, 0px)) + var(--space-4)) var(--space-4)
+           calc(max(env(safe-area-inset-bottom, 0px), var(--area-abajo, 0px)) + 104px);
+}
+.app-movil .contenido { padding: 0; gap: var(--space-4); min-width: 0; }
+.app-movil .contenido > * { flex-shrink: 0; }
+.app-movil .titulo-pantalla { font-size: 28px; line-height: 34px; }
+/* Páginas pensadas para escritorio, en celular: encabezado en columna, acciones que se acomodan,
+   selectores segmentados que se deslizan y tarjetas con menos relleno. */
+.app-movil .encabezado { flex-direction: column; align-items: stretch; gap: var(--space-3); }
+.app-movil .encabezado-acciones { flex-wrap: wrap; }
+.app-movil .encabezado-acciones > * { flex: 1 1 auto; }
+.app-movil .cf-seg { max-width: 100%; overflow-x: auto; scrollbar-width: none; }
+.app-movil .cf-seg::-webkit-scrollbar { display: none; }
+.app-movil .cf-seg button { flex: none; }
+.app-movil .cf-card { padding: var(--space-4); border-radius: 22px; }
+.app-movil img, .app-movil canvas, .app-movil svg { max-width: 100%; }
+/* Filas que se deslizan de lado: sin barra visible. */
+.desliza { overflow-x: auto; scrollbar-width: none; -webkit-overflow-scrolling: touch; }
+.desliza::-webkit-scrollbar { display: none; }
+
+/* Controles nativos (selects, fechas, barras) con el mismo tema de la app. */
+:root[data-theme="light"] { color-scheme: light; }
+:root[data-theme="dark"] { color-scheme: dark; }
+
+/* ---------- Tablet (Android ancho): diseño de escritorio táctil ---------- */
+html.tablet .app { padding-top: calc(var(--area-arriba, 0px) + var(--space-4)); padding-bottom: calc(var(--area-abajo, 0px) + var(--space-4)); }
+html.tablet .lateral { top: calc(var(--area-arriba, 0px) + var(--space-4)); height: calc(100vh - var(--area-arriba, 0px) - var(--area-abajo, 0px) - 2 * var(--space-4)); }
+html.tablet .abrir-menu { display: none; }
+/* Toques de al menos 44 px. */
+html.tablet .cf-btn { min-height: 44px; }
+html.tablet .cf-btn--icon { width: 44px; height: 44px; }
+html.tablet .corto, html.tablet .cf-btn--icon.corto { height: 44px; min-width: 44px; }
+html.tablet .cf-seg button { min-height: 40px; }
+html.tablet .cf-nav a { min-height: 48px; }
+html.tablet .cf-chip { min-height: 32px; }
+
+/* Vertical (según la pantalla física, no la ventana: el teclado no la cambia; pantalla.svelte.ts pone html.vertical):
+   menú recogido a íconos; ☰ lo abre encima del contenido. */
+html.tablet.vertical .app { grid-template-columns: 76px minmax(0, 1fr); }
+html.tablet.vertical .abrir-menu { display: inline-flex; flex: none; }
+html.tablet.vertical .app:not(.menu-abierto) .lateral { padding-inline: var(--space-2); align-items: center; }
+html.tablet.vertical .app:not(.menu-abierto) .logo { flex-direction: column; padding: 0; gap: var(--space-3); }
+html.tablet.vertical .app:not(.menu-abierto) .logo-tesela,
+html.tablet.vertical .app:not(.menu-abierto) .logo-nombre,
+html.tablet.vertical .app:not(.menu-abierto) .cf-nav a > span:not(.punto),
+html.tablet.vertical .app:not(.menu-abierto) .lateral .tema { display: none; }
+html.tablet.vertical .app:not(.menu-abierto) .cf-nav { align-self: center; display: flex; flex-direction: column; align-items: center; }
+html.tablet.vertical .app:not(.menu-abierto) .cf-nav a { justify-content: center; padding: 0; position: relative; width: 52px; height: 48px; min-height: 48px; flex: none; }
+html.tablet.vertical .app:not(.menu-abierto) .cf-nav .punto { position: absolute; top: 4px; right: 4px; margin: 0; min-width: 16px; height: 16px; line-height: 16px; font-size: 10px; padding: 0 4px; }
+html.tablet.vertical .app.menu-abierto .lateral { position: fixed; z-index: 40; left: var(--space-4); width: 260px; box-shadow: var(--shadow-3); }
+/* Cada uno en su columna: si el menú sale de la cuadrícula (abierto encima), el contenido no se corre a la de 76 px. */
+.app > .lateral { grid-column: 1; grid-row: 1; }
+.app > .contenido { grid-column: 2; grid-row: 1; }
+.velo-menu { position: fixed; inset: 0; z-index: 39; background: rgba(13, 10, 24, .28); }
+.lateral .tema button { padding: 0; }
+/* Paneles laterales dentro del área segura. */
+html.tablet .panel { top: calc(var(--area-arriba, 0px) + var(--space-4)); bottom: calc(var(--area-abajo, 0px) + var(--space-4)); }
+
+/* ---------- Android (celular y tablet): sin desenfoque en lo que se desplaza ----------
+   El WebView repinta cada vidrio desenfocado en cada paso del scroll: se atrasa y a veces deja
+   franjas sin pintar. Tarjetas, botones y campos usan el mismo vidrio un poco más sólido;
+   el desenfoque queda solo en lo que flota (barra inferior, hojas, avisos: .cf-glass-3). */
+html.celular, html.tablet { --glass-solido-1: rgba(255,255,255,.72); --glass-solido-2: rgba(255,255,255,.86); }
+html.celular[data-theme="dark"], html.tablet[data-theme="dark"] { --glass-solido-1: rgba(30,24,52,.72); --glass-solido-2: rgba(32,26,56,.88); }
+html.celular .panel.cf-glass-3 { -webkit-backdrop-filter: none; backdrop-filter: none; background: var(--surface); }
+html.celular .cf-glass, html.tablet .cf-glass { -webkit-backdrop-filter: none; backdrop-filter: none; background: var(--glass-solido-2); }
+html.celular .cf-glass-1, html.tablet .cf-glass-1 { -webkit-backdrop-filter: none; backdrop-filter: none; background: var(--glass-solido-1); }
+html.celular .cf-btn--secondary, html.tablet .cf-btn--secondary,
+html.celular .cf-frost, html.tablet .cf-frost { -webkit-backdrop-filter: none; backdrop-filter: none; }
+
+/* ---------- Android (celular y tablet): vidrio sin desenfoque en tarjetas ----------
+   El WebView de Android repinta el desenfoque de cada tarjeta en cada paso del scroll: se siente
+   lento y a veces deja franjas sin pintar. Las tarjetas usan el mismo vidrio un poco más sólido;
+   el desenfoque queda solo en lo que flota (barra inferior, hojas y paneles: cf-glass-3). */
+html.celular .cf-glass, html.tablet .cf-glass,
+html.celular .cf-glass-1, html.tablet .cf-glass-1,
+html.celular .cf-btn--secondary, html.tablet .cf-btn--secondary {
+  -webkit-backdrop-filter: none; backdrop-filter: none;
+}
+html.celular .cf-glass, html.tablet .cf-glass { background: color-mix(in srgb, var(--surface) 86%, transparent); }
+html.celular .cf-glass-1, html.tablet .cf-glass-1 { background: color-mix(in srgb, var(--surface) 62%, transparent); }
+
+/* Android: sin el recuadro azul que pinta el WebView al tocar (el estado presionado ya lo da cada control). */
+html.celular, html.tablet { -webkit-tap-highlight-color: transparent; }
+html.celular :focus:not(:focus-visible), html.tablet :focus:not(:focus-visible) { outline: none; }

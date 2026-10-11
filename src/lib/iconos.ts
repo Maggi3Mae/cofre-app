@@ -1,0 +1,82 @@
+// Íconos de trazo 24×24 (estilo del sistema: stroke 1,8, extremos redondeados).
+export const iconos = {
+  dashboard: "M5 12H3l9-9 9 9h-2M5 12v7a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2v-7M9 21v-6a2 2 0 0 1 2-2h2a2 2 0 0 1 2 2v6",
+  cuentas: "M17 8V5a1 1 0 0 0-1-1H6a2 2 0 0 0 0 4h12a1 1 0 0 1 1 1v3m0 4v3a1 1 0 0 1-1 1H6a2 2 0 0 1-2-2V6M20 12v4h-4a2 2 0 0 1 0-4h4",
+  transacciones: "M7 3v18M4 6l3-3 3 3M17 21V3M20 18l-3 3-3-3",
+  categorias: "M7.5 7.5h.01M3 6v5.17a2 2 0 0 0 .59 1.42l7.71 7.71a2.41 2.41 0 0 0 3.41 0l5.59-5.59a2.41 2.41 0 0 0 0-3.41L12.59 3.59A2 2 0 0 0 11.17 3H6a3 3 0 0 0-3 3z",
+  presupuestos: "M11 12a1 1 0 1 0 2 0a1 1 0 1 0-2 0M7 12a5 5 0 1 0 10 0a5 5 0 1 0-10 0M3 12a9 9 0 1 0 18 0a9 9 0 1 0-18 0",
+  inversiones: "M3 17l6-6 4 4 8-8M14 7h7v7",
+  simulador: "M4 5a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2zM8 7h8v3H8zM8 14v.01M12 14v.01M16 14v.01M8 17v.01M12 17v.01M16 17v.01",
+  importar: "M4 17v2a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-2M7 11l5 5 5-5M12 4v12",
+  reportes: "M3 13a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v6a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1zM15 9a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v10a1 1 0 0 1-1 1h-4a1 1 0 0 1-1-1zM9 5a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v14a1 1 0 0 1-1 1h-4a1 1 0 0 1-1-1z",
+  ajustes: "M4 6h8M16 6h4M14 4v4M4 12h2M10 12h10M8 10v4M4 18h11M19 18h1M17 16v4",
+  cofre: "M4 10a4 4 0 0 1 4-4h8a4 4 0 0 1 4 4v9H4zM4 12h16M11 12v3h2v-3",
+  ingreso: "M17 7L7 17M16 17H7V8",
+  personas: "M9 11a4 4 0 1 0 0-8a4 4 0 1 0 0 8M2 21v-1a6 6 0 0 1 6-6h2a6 6 0 0 1 6 6v1M16 3.13a4 4 0 0 1 0 7.75M22 21v-1a6 6 0 0 0-4-5.65",
+  egreso: "M7 17L17 7M8 7h9v9",
+  mas: "M12 5v14M5 12h14",
+  buscar: "M3 10a7 7 0 1 0 14 0a7 7 0 1 0-14 0M21 21l-6-6",
+  campana: "M10 5a2 2 0 1 1 4 0a7 7 0 0 1 4 6v3a4 4 0 0 0 2 3H4a4 4 0 0 0 2-3v-3a7 7 0 0 1 4-6M9 17v1a3 3 0 0 0 6 0v-1",
+  carrito: "M4 19a2 2 0 1 0 4 0a2 2 0 1 0-4 0M15 19a2 2 0 1 0 4 0a2 2 0 1 0-4 0M17 17H6V3H4M6 5l14 1-1 7H6",
+  tarjeta: "M3 8a3 3 0 0 1 3-3h12a3 3 0 0 1 3 3v8a3 3 0 0 1-3 3H6a3 3 0 0 1-3-3zM3 10h18M7 15h.01M11 15h2",
+  sol: "M8 12a4 4 0 1 0 8 0a4 4 0 1 0-8 0M3 12h1M20 12h1M12 3v1M12 20v1M5.6 5.6l.7.7M17.7 17.7l.7.7M5.6 18.4l.7-.7M17.7 6.3l.7-.7",
+  luna: "M12 3h.39a7.5 7.5 0 0 0 7.92 12.45A9 9 0 1 1 12 3z",
+  // Categorías (comida, hogar, transporte, servicios, entretenimiento y rendimientos
+  // son los íconos food, home, bus, bolt, play y coins del sistema Cofre)
+  comida: "M7 3v8M4 3v5a3 3 0 0 0 6 0V3M7 11v10M17 21V3c-2 1-3 4-3 7h3",
+  transporte: "M6 17V6a3 3 0 0 1 3-3h6a3 3 0 0 1 3 3v11zM6 11h12M8 17v3M16 17v3M8.5 14h.01M15.5 14h.01",
+  hogar: "M3 11l9-7 9 7v9a1 1 0 0 1-1 1h-5v-6H9v6H4a1 1 0 0 1-1-1z",
+  servicios: "M13 3L5 14h6l-1 7 8-11h-6z",
+  salud: "M19.5 12.6L12 20l-7.5-7.4A5 5 0 1 1 12 6a5 5 0 1 1 7.5 6.6zM7.5 12h2l1.5-2 2 4 1.5-2h2",
+  educacion: "M22 9L12 4 2 9l10 5 10-5zM6 11v5c0 1.7 2.7 3 6 3s6-1.3 6-3v-5M22 9v6",
+  ropa: "M15 4l6 2v5h-3v9H6v-9H3V6l6-2a3 3 0 0 0 6 0z",
+  entretenimiento: "M4 6h16v12H4zM10 9.5v5l4.5-2.5z",
+  suscripciones: "M4 12V9a3 3 0 0 1 3-3h13l-3-3M20 12v3a3 3 0 0 1-3 3H4l3 3",
+  salario: "M3 9a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2zM8 7V5a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2M3 13h18",
+  rendimientos: "M5 8c0-1.7 3.1-3 7-3s7 1.3 7 3-3.1 3-7 3-7-1.3-7-3zM5 8v4c0 1.7 3.1 3 7 3s7-1.3 7-3V8M5 12v4c0 1.7 3.1 3 7 3s7-1.3 7-3v-4",
+  regalo: "M3 8h18v4H3zM5 12v8h14v-8M12 8v12M12 8c-1-3-5-4-5-1.5S9.5 8 12 8c2.5 0 5 0 5-1.5S13 5 12 8",
+  mascotas: "M8 7a1.5 2 0 1 0 3 0a1.5 2 0 1 0-3 0M13 7a1.5 2 0 1 0 3 0a1.5 2 0 1 0-3 0M4.5 11a1.5 2 0 1 0 3 0a1.5 2 0 1 0-3 0M16.5 11a1.5 2 0 1 0 3 0a1.5 2 0 1 0-3 0M12 13c-2.5 0-5 3-5 5a2 2 0 0 0 2 2c1 0 2-.5 3-.5s2 .5 3 .5a2 2 0 0 0 2-2c0-2-2.5-5-5-5z",
+  otros: "M4 7l8-4 8 4v10l-8 4-8-4zM4 7l8 4 8-4M12 11v10",
+  // Interfaz
+  cerrar: "M18 6L6 18M6 6l12 12",
+  editar: "M4 20h4L18.5 9.5a2.83 2.83 0 0 0-4-4L4 16v4M13.5 6.5l4 4",
+  archivar: "M3 5a1 1 0 0 1 1-1h16a1 1 0 0 1 1 1v2a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1zM5 8v10a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8M10 12h4",
+  papelera: "M4 7h16M10 11v6M14 11v6M5 7l1 12a2 2 0 0 0 2 2h8a2 2 0 0 0 2-2l1-12M9 7V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v3",
+  estrella: "M12 3.5l2.6 5.3 5.9.9-4.25 4.1 1 5.85L12 16.9l-5.25 2.75 1-5.85L3.5 9.7l5.9-.9z",
+  arrastrar: "M9 5h.01M9 12h.01M9 19h.01M15 5h.01M15 12h.01M15 19h.01",
+  arriba: "M12 19V5M5 12l7-7 7 7",
+  abajo: "M12 5v14M19 12l-7 7-7-7",
+  ojo: "M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7S2 12 2 12zM9 12a3 3 0 1 0 6 0a3 3 0 1 0-6 0",
+  ojoTachado: "M3 3l18 18M10.6 5.1A10 10 0 0 1 12 5c6.5 0 10 7 10 7a17 17 0 0 1-3.2 4.1M6.6 6.6C3.9 8.4 2 12 2 12s3.5 7 10 7c1.9 0 3.6-.6 5-1.5M9.9 9.9a3 3 0 0 0 4.2 4.2",
+  siguiente: "M9 6l6 6-6 6",
+  candado: "M6 11h12a1 1 0 0 1 1 1v8a1 1 0 0 1-1 1H6a1 1 0 0 1-1-1v-8a1 1 0 0 1 1-1zM8 11V7a4 4 0 0 1 8 0v4",
+  documento: "M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8zM14 3v5h5M9 13h6M9 17h6",
+  deshacer: "M9 14L4 9l5-5M4 9h10.5a5.5 5.5 0 0 1 0 11H11",
+  copiar: "M9 9h10a1 1 0 0 1 1 1v10a1 1 0 0 1-1 1H9a1 1 0 0 1-1-1V10a1 1 0 0 1 1-1zM5 15H4a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1h10a1 1 0 0 1 1 1v1",
+  check: "M5 12l5 5 9-10",
+  sincronizar: "M20 11a8 8 0 0 0-14.9-3M4 4v4h4M4 13a8 8 0 0 0 14.9 3M20 20v-4h-4",
+  puntos: "M5 12h.01M12 12h.01M19 12h.01",
+  compartir: "M4 12v7a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-7M16 6l-4-4-4 4M12 2v13",
+  repetir: "M4 12V9a3 3 0 0 1 3-3h13M17 3l3 3-3 3M20 12v3a3 3 0 0 1-3 3H4M7 21l-3-3 3-3",
+  pausa: "M7 5h3v14H7zM14 5h3v14h-3z",
+  reanudar: "M7 4v16l13-8z",
+  menu: "M4 6h16M4 12h16M4 18h16",
+  foto: "M4 8a2 2 0 0 1 2-2h2l1.5-2h5L16 6h2a2 2 0 0 1 2 2v10a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2zM9 13a3 3 0 1 0 6 0a3 3 0 1 0-6 0",
+  billete: "M3 7a1 1 0 0 1 1-1h16a1 1 0 0 1 1 1v10a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1zM10 12a2 2 0 1 0 4 0a2 2 0 1 0-4 0M6 9.5v.01M18 14.5v.01",
+} as const;
+/** Íconos que se pueden asignar a una categoría (mercado usa «carrito»). */
+export const iconosCategoria = [
+  "comida", "carrito", "transporte", "hogar", "servicios", "salud", "educacion", "ropa",
+  "entretenimiento", "suscripciones", "regalo", "mascotas", "salario", "rendimientos",
+  "tarjeta", "cofre", "otros",
+] as const;
+
+/** Nombre legible de cada ícono de categoría (para lectores de pantalla y tooltips). */
+export const nombresIconoCategoria: Record<(typeof iconosCategoria)[number], string> = {
+  comida: "Comida", carrito: "Mercado", transporte: "Transporte", hogar: "Hogar", servicios: "Servicios",
+  salud: "Salud", educacion: "Educación", ropa: "Ropa", entretenimiento: "Entretenimiento",
+  suscripciones: "Suscripciones", regalo: "Regalo", mascotas: "Mascotas", salario: "Salario",
+  rendimientos: "Rendimientos", tarjeta: "Tarjeta", cofre: "Ahorro", otros: "Otros",
+};
+
+export type NombreIcono = keyof typeof iconos;

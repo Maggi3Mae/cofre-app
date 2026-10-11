@@ -1,0 +1,114 @@
+
+/* Cofre — component styles. Reads the tokens from tokens.css (var(--primary), var(--r-xl)…).
+   Gradients are composites, so they live here, per theme. */
+:root, [data-theme="light"] {
+  --grad-brand: linear-gradient(135deg, #9A74FF 0%, #6236E0 45%, #2A1470 100%);
+  --grad-aurora: radial-gradient(56rem 36rem at 88% -8%, rgba(183,157,255,.62), transparent 60%), radial-gradient(40rem 30rem at -8% 42%, rgba(251,199,221,.55), transparent 60%), radial-gradient(48rem 34rem at 55% 112%, rgba(248,227,168,.55), transparent 60%), #EEEAF8;
+  --grad-chart: linear-gradient(180deg, rgba(98,54,224,.35), rgba(98,54,224,0));
+  --glass-sat: 160%;
+}
+[data-theme="dark"] {
+  --grad-brand: linear-gradient(135deg, #7C4DFF 0%, #4E27B8 42%, #170A3D 100%);
+  --grad-aurora: radial-gradient(56rem 36rem at 88% -8%, rgba(124,77,255,.42), transparent 60%), radial-gradient(40rem 30rem at -8% 42%, rgba(176,33,94,.26), transparent 60%), radial-gradient(48rem 34rem at 55% 112%, rgba(78,216,193,.14), transparent 60%), #0D0A18;
+  --grad-chart: linear-gradient(180deg, rgba(166,139,255,.30), rgba(166,139,255,0));
+  --glass-sat: 140%;
+}
+
+/* Base */
+.cf { font-family: var(--font-sans); color: var(--ink); font-variant-numeric: tabular-nums; -webkit-font-smoothing: antialiased; }
+.cf *, .cf *::before, .cf *::after { box-sizing: border-box; }
+.cf-stage { background: var(--grad-aurora); padding: var(--space-6); min-height: 100%; display: flex; flex-wrap: wrap; gap: var(--space-4); align-items: flex-start; }
+.cf-display { font-family: var(--font-display); }
+.cf-overline { font-size: 11px; line-height: 16px; font-weight: 600; letter-spacing: .08em; text-transform: uppercase; color: var(--ink-2); }
+.cf-muted { color: var(--ink-2); }
+.cf-icon { width: 20px; height: 20px; flex: none; fill: none; stroke: currentColor; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; }
+.cf-sr { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+
+/* Glass */
+.cf-glass, .cf-glass-1, .cf-glass-3 { border: 1px solid var(--glass-border); }
+.cf-glass-1 { background: var(--glass-1); -webkit-backdrop-filter: blur(var(--blur-1)) saturate(var(--glass-sat)); backdrop-filter: blur(var(--blur-1)) saturate(var(--glass-sat)); }
+.cf-glass { background: var(--glass-2); -webkit-backdrop-filter: blur(var(--blur-2)) saturate(var(--glass-sat)); backdrop-filter: blur(var(--blur-2)) saturate(var(--glass-sat)); box-shadow: var(--shadow-2); }
+.cf-glass-3 { background: var(--glass-3); -webkit-backdrop-filter: blur(var(--blur-3)) saturate(var(--glass-sat)); backdrop-filter: blur(var(--blur-3)) saturate(var(--glass-sat)); box-shadow: var(--shadow-3); }
+@supports not ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
+  .cf-glass, .cf-glass-1, .cf-glass-3 { background: var(--surface); }
+}
+.cf-card { border-radius: var(--r-xl); padding: var(--space-6); display: flex; flex-direction: column; gap: var(--space-4); }
+.cf-card-title { margin: 0; font-family: var(--font-display); font-size: 20px; line-height: 26px; font-weight: 600; letter-spacing: -.01em; }
+
+/* Button */
+.cf-btn { display: inline-flex; align-items: center; justify-content: center; gap: var(--space-2); height: 44px; padding: 0 var(--space-5); border-radius: var(--r-md); border: 0; font: 600 14px/20px var(--font-sans); cursor: pointer; white-space: nowrap; }
+.cf-btn:focus-visible { outline: 2px solid var(--primary); outline-offset: 2px; }
+.cf-btn--primary { color: var(--on-primary); background: linear-gradient(180deg, var(--primary-hi), var(--primary)); box-shadow: inset 0 1px 0 rgba(255,255,255,.25), var(--glow-brand); }
+.cf-btn--secondary { color: var(--ink); background: var(--input); border: 1px solid var(--glass-border); box-shadow: var(--shadow-1); -webkit-backdrop-filter: blur(12px); backdrop-filter: blur(12px); }
+.cf-btn--ghost { color: var(--primary-text); background: transparent; padding: 0 var(--space-4); }
+.cf-btn--icon { width: 44px; padding: 0; color: var(--ink); background: var(--input); border: 1px solid var(--glass-border); box-shadow: var(--shadow-1); position: relative; }
+.cf-btn .cf-icon { width: 18px; height: 18px; }
+.cf-dot { position: absolute; top: 9px; right: 10px; width: 8px; height: 8px; border-radius: var(--r-full); background: var(--expense); box-shadow: 0 0 0 2px var(--glass-3); }
+
+/* Chip */
+.cf-chip { display: inline-flex; align-items: center; gap: 6px; font-size: 13px; line-height: 18px; font-weight: 600; padding: 5px 12px; border-radius: var(--r-full); white-space: nowrap; }
+.cf-chip--sm { font-size: 12px; padding: 3px 8px; }
+.cf-chip .cf-icon { width: 14px; height: 14px; stroke-width: 2.2; }
+.cf-chip--income { background: var(--income-soft); color: var(--income); }
+.cf-chip--expense { background: var(--expense-soft); color: var(--expense); }
+.cf-chip--saving { background: var(--saving-soft); color: var(--saving); }
+.cf-chip--brand { background: var(--primary-soft); color: var(--primary-text); }
+.cf-chip--warn-80 { background: var(--warn-80-soft); color: var(--warn-80); }
+.cf-chip--warn-90 { background: var(--warn-90-soft); color: var(--warn-90); }
+.cf-chip--over-100 { background: var(--over-100-soft); color: var(--over-100); }
+
+/* Progress / budget bar */
+.cf-bar { height: 8px; border-radius: var(--r-full); background: var(--track); overflow: hidden; }
+.cf-bar--lg { height: 14px; }
+.cf-bar--sm { height: 6px; }
+.cf-bar > span { display: block; height: 100%; border-radius: var(--r-full); background: linear-gradient(90deg, var(--primary-hi), var(--primary)); }
+.cf-bar--income > span { background: var(--income); }
+.cf-bar--saving > span { background: var(--saving); }
+.cf-bar--warn-80 > span { background: var(--warn-80); }
+.cf-bar--warn-90 > span { background: var(--warn-90); }
+.cf-bar--over-100 > span { background: repeating-linear-gradient(135deg, var(--over-100) 0 8px, var(--over-100-alt) 8px 16px); }
+
+/* Segmented control */
+.cf-seg { display: inline-flex; padding: var(--space-1); border-radius: var(--r-md); background: var(--track); }
+.cf-seg button { height: 34px; padding: 0 var(--space-3); border: 0; border-radius: var(--r-sm); background: transparent; font: 600 13px/18px var(--font-sans); color: var(--ink-2); cursor: pointer; }
+.cf-seg button[aria-pressed="true"] { background: var(--glass-3); box-shadow: var(--shadow-1); color: var(--ink); }
+
+/* Search field */
+.cf-field { display: flex; align-items: center; gap: 10px; height: 44px; padding: 0 14px; border-radius: var(--r-md); background: var(--input); border: 1px solid var(--glass-border); box-shadow: var(--shadow-1); color: var(--ink-2); }
+.cf-field:focus-within { outline: 2px solid var(--primary); outline-offset: 1px; }
+.cf-field input { flex: 1; min-width: 0; border: 0; outline: 0; background: transparent; font: 400 14px/20px var(--font-sans); color: var(--ink); }
+.cf-field input::placeholder { color: var(--ink-2); }
+.cf-field .cf-icon { width: 18px; height: 18px; }
+
+/* Nav item */
+.cf-nav { display: flex; flex-direction: column; gap: var(--space-1); }
+.cf-nav a { display: flex; align-items: center; gap: var(--space-3); height: 44px; padding: 0 var(--space-3); border-radius: var(--r-md); text-decoration: none; font-size: 14px; font-weight: 500; color: var(--ink-2); }
+.cf-nav a[aria-current="page"] { font-weight: 600; color: var(--ink); background: var(--nav-active); box-shadow: var(--shadow-1); }
+.cf-nav a[aria-current="page"] .cf-icon { color: var(--primary); }
+.cf-nav a > span { flex: 1; }
+
+/* Icon tile */
+.cf-tile { width: 40px; height: 40px; flex: none; border-radius: 12px; display: flex; align-items: center; justify-content: center; }
+.cf-tile .cf-icon { width: 18px; height: 18px; stroke-width: 1.9; }
+.cf-tile--income { background: var(--income-soft); color: var(--income); }
+.cf-tile--expense { background: var(--expense-soft); color: var(--expense); }
+.cf-tile--saving { background: var(--saving-soft); color: var(--saving); }
+.cf-tile--brand { background: var(--primary-soft); color: var(--primary-text); }
+
+/* Balance card */
+.cf-balance { position: relative; overflow: hidden; border-radius: var(--r-xl); padding: var(--space-6); background: var(--grad-brand); color: #FFFFFF; box-shadow: var(--glow-brand); display: flex; flex-direction: column; gap: 18px; }
+.cf-balance::before { content: ""; position: absolute; width: 320px; height: 320px; right: -90px; top: -140px; border-radius: var(--r-full); background: radial-gradient(closest-side, rgba(255,255,255,.28), rgba(255,255,255,0)); }
+.cf-balance > * { position: relative; }
+.cf-balance .cf-overline { color: rgba(255,255,255,.82); }
+.cf-balance-amount { font-family: var(--font-display); font-size: 52px; line-height: 56px; font-weight: 650; letter-spacing: -.035em; }
+.cf-frost { border-radius: 16px; padding: 12px 14px; background: rgba(255,255,255,.14); border: 1px solid rgba(255,255,255,.22); -webkit-backdrop-filter: blur(12px); backdrop-filter: blur(12px); }
+
+/* Transaction row */
+.cf-txn { display: grid; grid-template-columns: minmax(0, 2.2fr) minmax(0, 1.2fr) minmax(0, 1fr) minmax(0, 1.1fr); gap: var(--space-3); align-items: center; padding: 10px var(--space-3); border-bottom: 1px solid var(--line); font-size: 13px; color: var(--ink-2); }
+.cf-txn--head { padding: var(--space-2) var(--space-3); font-size: 11px; font-weight: 600; letter-spacing: .08em; text-transform: uppercase; }
+.cf-txn-name { display: flex; align-items: center; gap: var(--space-3); min-width: 0; }
+.cf-txn-name b { display: block; font-size: 14px; font-weight: 600; color: var(--ink); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.cf-txn-amt { text-align: right; font-size: 14px; font-weight: 600; white-space: nowrap; }
+.cf-amt-income { color: var(--income); }
+.cf-amt-expense { color: var(--expense); }
+.cf-amt-saving { color: var(--saving); }
