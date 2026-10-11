@@ -2,6 +2,8 @@
 //  · PDF con pdf.js: se conserva la posición de cada texto para rearmar filas y columnas.
 //  · Excel/ODS con calamine (Rust), CSV aquí mismo.
 import { cuerpoBytes } from "$lib/ipc";
+import { leerCsv } from "./csv";
+export { leerCsv };
 import "./polyfill-streams";
 import { invoke } from "@tauri-apps/api/core";
 import { getDocument, GlobalWorkerOptions, PasswordResponses } from "pdfjs-dist";
@@ -113,29 +115,3 @@ function armarLineas(items: { x: number; y: number; w: number; s: string; alto: 
   });
 }
 
-// ---------- CSV ----------
-
-export function leerCsv(texto: string): string[][] {
-  const primera = texto.split(/\r?\n/, 1)[0] ?? "";
-  const sep = [";", "\t", ","].reduce((a, b) => (primera.split(b).length > primera.split(a).length ? b : a));
-  const filas: string[][] = [];
-  let fila: string[] = [], celda = "", comillas = false;
-  for (let i = 0; i < texto.length; i++) {
-    const c = texto[i];
-    if (comillas) {
-      if (c === '"' && texto[i + 1] === '"') { celda += '"'; i++; }
-      else if (c === '"') comillas = false;
-      else celda += c;
-    } else if (c === '"') comillas = true;
-    else if (c === sep) { fila.push(celda.trim()); celda = ""; }
-    else if (c === "\n" || c === "\r") {
-      if (c === "\r" && texto[i + 1] === "\n") i++;
-      fila.push(celda.trim()); celda = "";
-      if (fila.some((x) => x)) filas.push(fila);
-      fila = [];
-    } else celda += c;
-  }
-  fila.push(celda.trim());
-  if (fila.some((x) => x)) filas.push(fila);
-  return filas;
-}

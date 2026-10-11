@@ -11,6 +11,11 @@ import { porConfirmar, proximosPagos } from "../src/lib/datos/recurrentes.ts";
 import { listarTransacciones } from "../src/lib/datos/transacciones.ts";
 import { listarEtiquetas } from "../src/lib/datos/etiquetas.ts";
 import { leerAjuste } from "../src/lib/datos/ajustes.ts";
+import { extractoDemo } from "../src/lib/demo/extracto.ts";
+import { leerCsv } from "../src/lib/importar/csv.ts";
+import type { Documento } from "../src/lib/importar/documento.ts";
+import { detectar } from "../src/lib/importar/bancos.ts";
+import { hoy } from "../src/lib/formato.ts";
 
 let ok = 0;
 const prueba = async (nombre: string, f: () => Promise<void>) => { await f(); ok++; console.log("✓", nombre); };
@@ -70,6 +75,24 @@ await prueba("Me deben: uno vencido y un gasto dividido", async () => {
 await prueba("recurrentes: uno por confirmar y próximos pagos", async () => {
   assert.equal((await porConfirmar()).length, 1);
   assert.ok((await proximosPagos(30)).lista.length >= 3);
+});
+
+await prueba("extracto de ejemplo: Nequi, billetera, saldos que cuadran y la recarga ya registrada", async () => {
+  const filas = leerCsv(extractoDemo(hoy()));
+  const doc: Documento = { tipo: "hoja", hojas: [{ nombre: "CSV", filas }], texto: filas.map((f) => f.join("\t")).join("\n") };
+  const cuentas = await listarCuentas();
+  const d = detectar(doc, cuentas);
+  assert.equal(d.formato?.id, "nequi");
+  assert.equal(d.ultimos4, "9012");
+  assert.equal(cuentas.find((c) => c.id === d.cuentaId)?.nombre, "Billetera digital");
+  const l = d.formato!.leer(doc);
+  console.log(`   ${l.movimientos.length} movimientos · ${l.validacion.mensajes.join(" ")}`);
+  assert.equal(l.movimientos.length, 10);
+  assert.ok(l.validacion.ok);
+  const recarga = l.movimientos.find((m) => m.sentido === "abono")!;
+  const ya = (await listarTransacciones({ cuentaId: d.cuentaId!, tipo: "transferencia", limite: 500 }))
+    .some((t) => t.monto === recarga.monto && Math.abs(Date.parse(t.fecha) - Date.parse(recarga.fecha)) <= 3 * 864e5);
+  assert.ok(ya, "la recarga del extracto coincide con una transferencia de la demo");
 });
 
 console.log(`\n${ok} pruebas de la demostración OK`);

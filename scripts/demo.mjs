@@ -3,8 +3,9 @@
 //   npm run demo -- --celular          ventana del tamaño de un celular, con el diseño de celular
 //   npm run demo -- --reiniciar        borra la base de demostración y la vuelve a llenar
 // La primera vez (o tras --reiniciar) la app llena la base sola al abrir.
+// Cada vez deja extracto-ejemplo.csv en la carpeta del proyecto, para probar Importar.
 import { spawn } from "node:child_process";
-import { rmSync } from "node:fs";
+import { rmSync, writeFileSync } from "node:fs";
 import { homedir } from "node:os";
 import { join } from "node:path";
 
@@ -24,6 +25,14 @@ if (args.has("--reiniciar")) {
   for (const f of [base, `${base}-wal`, `${base}-shm`, `${base}-journal`]) rmSync(f, { force: true });
   console.log("Base de demostración borrada: se vuelve a llenar al abrir.");
 }
+
+// Extracto de ejemplo con fechas de los últimos días (formato Nequi, cuenta «Billetera digital»).
+const { extractoDemo } = await import("../src/lib/demo/extracto.ts");
+const d = new Date();
+const hoy = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`;
+const rutaExtracto = join(process.cwd(), "extracto-ejemplo.csv");
+writeFileSync(rutaExtracto, extractoDemo(hoy));
+console.log(`Extracto de ejemplo para Importar: ${rutaExtracto}`);
 
 const env = {
   ...process.env,

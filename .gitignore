@@ -23,3 +23,6 @@ vite.config.ts.timestamp-*
 *.jks
 *.keystore
 keystore.properties
+
+# Extracto de ejemplo que genera `npm run demo`
+extracto-ejemplo.csv

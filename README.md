@@ -82,6 +82,7 @@ Sigue la guía de [ANDROID.md](ANDROID.md): Android Studio, SDK/NDK, APK de depu
 
 - `npm run demo -- --celular`: ventana del tamaño de un celular, con el diseño de celular.
 - `npm run demo -- --reiniciar`: borra la base de ejemplo y la vuelve a llenar.
+- Cada vez deja `extracto-ejemplo.csv` en la carpeta del proyecto: súbelo en Importar para ver cómo reconoce el banco, la cuenta y las categorías.
 
 ### Pruebas
 

@@ -16,7 +16,7 @@
     "prueba:sinc": "node --experimental-strip-types --no-warnings pruebas/sinc.prueba.ts",
     "prueba:recurrentes": "node --experimental-strip-types --no-warnings pruebas/recurrentes.prueba.ts",
     "prueba:demo": "node --experimental-strip-types --no-warnings --import ./pruebas/apoyo/registrar.mjs pruebas/demo.prueba.ts",
-    "demo": "node scripts/demo.mjs"
+    "demo": "node --experimental-strip-types --no-warnings scripts/demo.mjs"
   },
   "license": "GPL-3.0-or-later",
   "dependencies": {
