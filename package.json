@@ -1,6 +1,6 @@
 {
   "name": "cofre",
-  "version": "0.1.0",
+  "version": "1.0.0",
   "description": "Cofre — finanzas personales, todo local",
   "type": "module",
   "scripts": {
