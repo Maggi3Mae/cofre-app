@@ -84,3 +84,22 @@ Cuando termines, haz commit de `src-tauri/gen/android` y avísame si algo falló
    - Una foto de factura adjunta en el Mac → aparece en el celular.
 
 Si algo falla, copia el mensaje de error que sale en Más → Sincronizar con el Mac.
+
+## APK pública (la de GitHub Releases)
+
+La APK de Releases la compila GitHub Actions (`.github/workflows/instaladores.yml`) con una **llave pública de Cofre**, distinta de la llave personal: así el archivo no lleva el nombre de nadie ni rutas del computador donde se compiló. No se puede instalar encima de una APK firmada con otra llave.
+
+Crear la llave (una vez), con datos neutros:
+
+```sh
+keytool -genkeypair -v -keystore cofre-publica.jks -alias cofre -keyalg RSA -keysize 4096 -validity 10000 \
+  -dname "CN=Cofre, OU=Cofre, O=Cofre, L=, ST=, C=CO"
+base64 -i cofre-publica.jks | pbcopy   # copia el archivo en base64
+```
+
+En GitHub → el repo → Settings → Secrets and variables → Actions → New repository secret:
+- `ANDROID_KEYSTORE_BASE64`: lo copiado.
+- `ANDROID_KEY_ALIAS`: `cofre`.
+- `ANDROID_KEY_PASSWORD`: la contraseña que pusiste (la misma para el almacén y la llave).
+
+Guarda `cofre-publica.jks` y la contraseña en un lugar seguro (fuera del repo): sin ellos no se pueden publicar actualizaciones que se instalen encima.

@@ -1,6 +1,5 @@
-# Compila los instaladores de Mac (.dmg universal) y Windows (.exe) al crear una etiqueta «v*»
-# (por ejemplo v1.0.0) y los deja en un borrador de Release. Solo corre en el repo público.
-# El APK de Android se sube a mano (necesita la llave de firma, que no sale del Mac).
+# Compila los instaladores de Mac (.dmg universal), Windows (.exe) y Android (.apk) al crear una
+# etiqueta «v*» (por ejemplo v1.0.0) y los adjunta a esa Release. Solo corre en el repo público.
 name: Instaladores
 
 on:
@@ -51,6 +50,7 @@ jobs:
             Instaladores de Cofre. Ver «Instalar» en el README.
             · Mac: Cofre_*_universal.dmg (Apple Silicon e Intel).
             · Windows: Cofre_*_x64-setup.exe (sin probar a fondo todavía).
+            · Android: Cofre-*.apk.
           releaseDraft: true
           args: ${{ matrix.args }}
 
@@ -62,3 +62,70 @@ jobs:
           path: |
             src-tauri/target/**/release/bundle/dmg/*.dmg
             src-tauri/target/**/release/bundle/nsis/*.exe
+
+  # APK de Android firmado con la llave PÚBLICA de Cofre (no la personal), guardada en los Secrets del repo:
+  #   ANDROID_KEYSTORE_BASE64 (el .jks en base64), ANDROID_KEY_ALIAS, ANDROID_KEY_PASSWORD.
+  # Se compila aquí para que el APK no lleve rutas ni nombres del computador de nadie.
+  android:
+    if: github.repository == 'Maggi3Mae/cofre-app'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: 21
+
+      - uses: dtolnay/rust-toolchain@stable
+        with:
+          targets: aarch64-linux-android
+
+      - uses: swatinem/rust-cache@v2
+        with:
+          workspaces: src-tauri
+
+      - name: SDK de Android
+        run: yes | "$ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager" --install "platforms;android-37" "build-tools;37.0.0" > /dev/null || true
+
+      - name: Llave de firma
+        env:
+          KEYSTORE: ${{ secrets.ANDROID_KEYSTORE_BASE64 }}
+          ALIAS: ${{ secrets.ANDROID_KEY_ALIAS }}
+          CLAVE: ${{ secrets.ANDROID_KEY_PASSWORD }}
+        run: |
+          test -n "$KEYSTORE" || { echo "Faltan los Secrets de la llave de Android."; exit 1; }
+          echo "$KEYSTORE" | base64 -d > "$RUNNER_TEMP/cofre-publica.jks"
+          cat > src-tauri/gen/android/keystore.properties <<PROPS
+          storeFile=$RUNNER_TEMP/cofre-publica.jks
+          storePassword=$CLAVE
+          keyAlias=$ALIAS
+          keyPassword=$CLAVE
+          PROPS
+
+      - run: npm ci
+
+      - name: Compilar APK
+        run: NDK_HOME="$ANDROID_NDK_LATEST_HOME" npm run tauri android build -- --apk --target aarch64
+
+      - name: Nombre
+        run: |
+          VERSION=$(node -p "require('./package.json').version")
+          cp src-tauri/gen/android/app/build/outputs/apk/universal/release/app-universal-release.apk "Cofre-$VERSION.apk"
+          echo "APK=Cofre-$VERSION.apk" >> "$GITHUB_ENV"
+
+      - if: github.ref_type == 'tag'
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: gh release upload "${{ github.ref_name }}" "$APK" --clobber
+
+      - if: github.ref_type != 'tag'
+        uses: actions/upload-artifact@v4
+        with:
+          name: cofre-android
+          path: Cofre-*.apk
