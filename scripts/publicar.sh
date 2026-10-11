@@ -2,6 +2,7 @@
 # Copia Cofre del repo privado al público (cofre-app), sin notas de trabajo ni datos personales.
 #
 # Uso:  scripts/publicar.sh <carpeta del repo público> ["mensaje del commit"]
+#   Los commits del público siempre salen como «Humano» con el correo privado de GitHub.
 #   1. Copia lo que git sigue en el privado, menos lo de EXCLUIR.
 #   2. Se detiene si encuentra alguna palabra de .cofre-privado.
 #   3. Hace un commit en el público (no lo sube: revisa y luego `git push`).
@@ -39,5 +40,8 @@ find "$PUBLICO" -mindepth 1 -maxdepth 1 ! -name .git -exec rm -rf {} +
 (cd "$PRIVADO" && xargs -0 tar -cf - < "$TMP/lista") | tar -C "$PUBLICO" -xf -
 git -C "$PUBLICO" add -A
 if git -C "$PUBLICO" diff --cached --quiet; then echo "Sin cambios para publicar."; exit 0; fi
-git -C "$PUBLICO" commit -q -m "$MENSAJE"
+# Autor fijo y anónimo: el nombre y el correo de quien publica nunca quedan en el historial público.
+GIT_AUTHOR_NAME="Humano" GIT_AUTHOR_EMAIL="83187739+Maggi3Mae@users.noreply.github.com" \
+GIT_COMMITTER_NAME="Humano" GIT_COMMITTER_EMAIL="83187739+Maggi3Mae@users.noreply.github.com" \
+  git -C "$PUBLICO" commit -q -m "$MENSAJE"
 echo "✓ Commit hecho en $PUBLICO. Revisa con 'git -C $PUBLICO show --stat' y súbelo con 'git -C $PUBLICO push'."
