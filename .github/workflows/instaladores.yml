@@ -100,7 +100,11 @@ jobs:
           CLAVE: ${{ secrets.ANDROID_KEY_PASSWORD }}
         run: |
           test -n "$KEYSTORE" || { echo "Faltan los Secrets de la llave de Android."; exit 1; }
-          echo "$KEYSTORE" | base64 -d > "$RUNNER_TEMP/cofre-publica.jks"
+          # Sin espacios ni saltos de línea (por si se pegaron al copiar).
+          printf '%s' "$KEYSTORE" | tr -d ' \r\n\t' | base64 -d > "$RUNNER_TEMP/cofre-publica.jks" \
+            || { echo "ANDROID_KEYSTORE_BASE64 no es base64 válido: vuelve a copiarlo con «base64 -i cofre-publica.jks | pbcopy»."; exit 1; }
+          keytool -list -keystore "$RUNNER_TEMP/cofre-publica.jks" -storepass "$CLAVE" -alias "$ALIAS" > /dev/null \
+            || { echo "La llave no abre con ANDROID_KEY_PASSWORD y ANDROID_KEY_ALIAS: revisa esos dos Secrets."; exit 1; }
           cat > src-tauri/gen/android/keystore.properties <<PROPS
           storeFile=$RUNNER_TEMP/cofre-publica.jks
           storePassword=$CLAVE
