@@ -62,7 +62,12 @@ Arma e instala:
 npm run tauri android build -- --apk --target aarch64
 adb install -r src-tauri/gen/android/app/build/outputs/apk/universal/release/app-universal-release.apk
 ```
-**La primera vez**: la APK de depuración tiene otra firma, así que hay que desinstalarla antes (`adb uninstall co.cofre.app`). Se borran los datos del equipo; vuelve a emparejar con el Mac y llegan solos. Desde ahí, `adb install -r` actualiza sin borrar nada.
+**Si `adb install` dice `INSTALL_FAILED_UPDATE_INCOMPATIBLE` («signatures do not match»)**: en el equipo hay una Cofre firmada con otra llave (la de depuración o la pública de GitHub Releases). Android no deja cambiar de llave encima, así que hay que desinstalarla una vez:
+1. En el equipo: Más → Sincronizar con el Mac (en la tablet: Ajustes) y confirmar que esté al día, para que lo anotado solo ahí llegue al Mac.
+2. `adb uninstall co.cofre.app` y luego el `adb install` de arriba. Se borran los datos del equipo.
+3. Volver a emparejar con el Mac (código de 6 números): los datos llegan solos. Dar de nuevo el permiso de notificaciones.
+
+Desde ahí, `adb install -r` actualiza sin borrar nada. No mezclar: en tus equipos, siempre la APK con tu llave (la de GitHub Releases es para los demás).
 
 Cuando termines, haz commit de `src-tauri/gen/android` y avísame si algo falló (copia el error).
 
@@ -70,10 +75,10 @@ Cuando termines, haz commit de `src-tauri/gen/android` y avísame si algo falló
 
 1. **Mac**: `git pull`, `npm install` y abre Cofre con `npm run tauri dev`.
    La primera vez macOS pregunta si Cofre puede aceptar conexiones entrantes y usar la red local → **Permitir**.
-2. **Celular**: arma e instala la APK nueva:
+2. **Celular**: arma e instala la APK nueva (con tu llave, como en «APK para el uso diario»):
    ```
-   npm run tauri android build -- --apk --debug --target aarch64
-   ~/Library/Android/sdk/platform-tools/adb install -r src-tauri/gen/android/app/build/outputs/apk/universal/debug/app-universal-debug.apk
+   npm run tauri android build -- --apk --target aarch64
+   ~/Library/Android/sdk/platform-tools/adb install -r src-tauri/gen/android/app/build/outputs/apk/universal/release/app-universal-release.apk
    ```
 3. **Mac** → Ajustes → Equipos → «Emparejar un equipo». Aparece un código de 6 dígitos.
 4. **Celular** → Más → Sincronizar con el Mac: elige tu Mac en la lista (o «Escribir la dirección» con la que muestra el Mac), escribe el código en las 6 casillas y «Emparejar». (En la tablet: Ajustes → Sincronizar con el Mac.)

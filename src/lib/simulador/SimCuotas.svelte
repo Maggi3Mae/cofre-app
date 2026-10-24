@@ -237,7 +237,9 @@
 
 <style>
   .entradas { gap: var(--space-4); }
-  .rejilla { display: grid; grid-template-columns: 1fr 1fr; gap: var(--space-4); }
+  /* minmax(0, 1fr): con 1fr la columna no baja del ancho de su contenido y la gráfica (ancho fijo en px)
+     empujaba toda la página de lado. */
+  .rejilla { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: var(--space-4); }
   .ayuda { font-size: 12px; line-height: 16px; color: var(--ink-2); }
   .cuotas { display: flex; gap: var(--space-2); align-items: center; flex-wrap: wrap; }
   .corto { width: 90px; }
@@ -247,7 +249,8 @@
   .kpi b { font-size: 20px; line-height: 26px; font-weight: 650; font-variant-numeric: tabular-nums; }
   .kpi.principal b { font: 650 28px/34px var(--font-display); letter-spacing: -.02em; color: var(--primary-text); }
   .registrar { display: flex; align-items: center; gap: var(--space-3); flex-wrap: wrap; }
-  .graficas { display: grid; grid-template-columns: 1fr 1fr; gap: var(--space-4); }
+  .graficas { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: var(--space-4); }
+  .graficas > * { min-width: 0; }
   .graficas > :only-child { grid-column: 1 / -1; }
   .tabla { width: 100%; border-collapse: collapse; font-size: 13px; font-variant-numeric: tabular-nums; }
   .tabla th { text-align: right; font-weight: 600; color: var(--ink-2); font-size: 12px; padding: 8px 10px; border-bottom: 1px solid var(--line); }
@@ -257,5 +260,5 @@
   .tabla .cf-chip { margin-left: 6px; }
   .plegable { gap: var(--space-3); }
   .plegable summary { cursor: pointer; font-weight: 600; font-size: 14px; }
-  @media (max-width: 900px) { .kpis { grid-template-columns: 1fr 1fr; } .graficas, .rejilla { grid-template-columns: 1fr; } }
+  @media (max-width: 900px) { .kpis { grid-template-columns: 1fr 1fr; } .graficas, .rejilla { grid-template-columns: minmax(0, 1fr); } }
 </style>

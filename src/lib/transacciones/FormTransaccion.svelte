@@ -7,6 +7,7 @@
   import CampoMonto from "$lib/ui/CampoMonto.svelte";
   import CampoEtiquetas from "$lib/ui/CampoEtiquetas.svelte";
   import ElegirFoto from "$lib/ui/ElegirFoto.svelte";
+  import VisorFoto from "$lib/ui/VisorFoto.svelte";
   import { hoy, leerMonto, monto as fmtMonto, montoEditable, pesos } from "$lib/formato";
   import { fechaCorta } from "$lib/periodo";
   import {
@@ -737,10 +738,7 @@
     {/if}
   {/snippet}
 {#if fotoGrande && vistaFoto}
-  <div class="foto-grande" role="dialog" aria-label="Foto de la factura">
-    <button type="button" class="cf-btn cf-btn--icon cerrar-foto" onclick={() => (fotoGrande = false)} aria-label="Cerrar"><Icono nombre="cerrar" /></button>
-    <img src={vistaFoto} alt="Foto de la factura" />
-  </div>
+  <VisorFoto src={vistaFoto} alt="Foto de la factura" cerrar={() => (fotoGrande = false)} />
 {/if}
 </Panel>
 
@@ -795,9 +793,6 @@
   .adjunto-acciones { display: flex; flex-direction: column; align-items: flex-start; gap: 2px; }
   .adjuntar { align-self: flex-start; }
   .peligro { color: var(--expense); }
-  .foto-grande { position: fixed; inset: var(--space-4); z-index: 40; display: grid; place-items: center; border-radius: var(--r-xl); background: var(--glass-3); box-shadow: var(--shadow-3); }
-  .foto-grande img { max-width: calc(100% - 32px); max-height: calc(100% - 32px); object-fit: contain; border-radius: var(--r-md); }
-  .cerrar-foto { position: absolute; top: var(--space-3); right: var(--space-3); }
 
   /* ---------- Celular ---------- */
   /* Monto en el celular: el mismo campo del Mac, un poco más grande. */

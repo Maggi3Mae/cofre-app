@@ -162,10 +162,10 @@
         <div><dt>Fecha</dt><dd>{datos.fecha ? fechaCorta(datos.fecha) : "—"}{#if datos.fechaDudosa}<small class="dudosa">Revisa la fecha: el año no se leyó bien</small>{/if}</dd></div>
         <div><dt>Total</dt><dd class="total">{datos.total != null ? pesos(datos.total) : "—"}</dd></div>
         <div><dt>Pago</dt><dd>{datos.medio ? medios[datos.medio] : "—"}</dd></div>
-        <div><dt>Factura electrónica</dt><dd>{datos.cufe ? "Sí (CUFE leído)" : "No se leyó el CUFE"}</dd></div>
+        <div><dt>Factura electrónica</dt><dd>{datos.cufe ? "Sí (CUFE leído)" : datos.fuente.qr ? "El QR de este comercio no trae CUFE" : "No se leyó el CUFE"}</dd></div>
       </dl>
       <p class="caption">
-        {datos.fuente.qr ? "Datos del código QR DIAN, completados con el texto." : "Sin código QR legible: datos leídos del texto."}
+        {datos.fuente.qr ? "Datos del código QR DIAN, completados con el texto." : "No encontré el código QR: datos leídos del texto. Si la factura tiene QR, toma la foto más de cerca o con el modo Documentos."}
         {#if datos.total == null || !datos.fecha}Lo que falte lo completas en el siguiente paso.{:else}Revísalos en el siguiente paso.{/if}
       </p>
       {#if !datos.total && !datos.comercio}

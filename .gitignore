@@ -18,6 +18,7 @@ vite.config.ts.timestamp-*
 
 # Archivos del OCR copiados desde node_modules (scripts/copiar-ocr.mjs)
 /static/ocr
+/static/zxing
 
 # Llave de firma de Android: nunca al repo
 *.jks

@@ -90,22 +90,34 @@ export function buscarFecha(texto: string, hoy = new Date()): { fecha: string; d
 }
 
 // ---------- QR DIAN ----------
-// Formato con datos:  NumFac: 171P-178427\nFecFac: 2026-09-27\n...NitFac: 890904478\n...ValTolFac: 17900.00\nCUFE: ...
+// Formato con datos, separado por saltos de línea o por «;» (D1):
+//   NumFac: 171P-178427\nFecFac: 2026-09-27\n...NitFac: 890904478\n...ValTolFac: 17900.00\nCUFE: ...
+//   NumFac=G4O685404;FecFac=2026-10-13;...;ValTotalFac=14199.99;CUFE=...;QRCode=https://...
 // Formato solo enlace: https://catalogo-vpfe.dian.gov.co/document/searchqr?documentkey=<CUFE>
+// Enlace del comercio con parámetros (Dollarcity): ...?transdate=2026-10-15&prefix=F6G1&correlative=2048594&total=6000.00
+//   No trae CUFE ni NIT: se toman fecha, número y total.
 
 export function leerQrDian(qr: string): DatosFactura | null {
   const d = vacio();
-  const campo = (n: string) => qr.match(new RegExp(`${n}\\s*[:=]\\s*([^\\n\\r]+)`, "i"))?.[1].trim() ?? null;
-  const cufe = campo("CUFE") ?? qr.match(/documentkey=([0-9a-f]{64,})/i)?.[1] ?? null;
+  // El valor va hasta el fin de línea, un «;» o (en enlaces) un «&».
+  const campo = (...nombres: string[]) => {
+    for (const n of nombres) {
+      const v = qr.match(new RegExp(`(?:^|[\\s;?&])${n}\\s*[:=]\\s*([^\\n\\r;&]+)`, "i"))?.[1].trim();
+      if (v) return v;
+    }
+    return null;
+  };
+  const cufe = campo("CUFE", "documentkey") ?? null;
   if (cufe && /^[0-9a-f]{64,}$/i.test(cufe)) d.cufe = cufe.toLowerCase();
-  d.numero = campo("NumFac");
+  const prefijo = campo("prefix"), consecutivo = campo("correlative");
+  d.numero = campo("NumFac") ?? (prefijo && consecutivo ? `${prefijo}-${consecutivo}` : null);
   const nit = campo("NitFac");
   d.nit = nit ? normalizarNit(nit) : null;
-  const fec = campo("FecFac");
+  const fec = campo("FecFac", "transdate");
   const f = fec ? buscarFecha(fec) : null;
   d.fecha = f?.fecha ?? null;
   d.fechaDudosa = f?.dudosa ?? false;
-  const total = campo("ValTolFac") ?? campo("ValTotFac");
+  const total = campo("ValTolFac", "ValTotFac", "ValTotalFac", "total");
   d.total = total ? Math.round(Number(total.replace(/[^\d.]/g, "")) * 100) || null : null;
   if (!d.cufe && !d.nit && !d.total) return null; // no es un QR de factura
   d.fuente.qr = true;

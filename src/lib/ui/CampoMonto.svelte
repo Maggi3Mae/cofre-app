@@ -22,16 +22,35 @@
 
   const conOperadores = $derived(operadores ?? (esAndroid && grande));
 
+  // Al reformatear («800000» → «800.000») el navegador manda el cursor al final.
+  // Se cuentan los caracteres que importan (no los puntos ni espacios) antes del cursor y se devuelve ahí.
+  const SIGNIFICATIVO = /[\d,+\-−*x×X/÷]/;
+  const contar = (texto: string) => [...texto].filter((ch) => SIGNIFICATIVO.test(ch)).length;
+  function posicionTras(texto: string, n: number): number {
+    if (n <= 0) return 0;
+    let vistos = 0;
+    for (let i = 0; i < texto.length; i++) {
+      if (SIGNIFICATIVO.test(texto[i]) && ++vistos === n) return i + 1;
+    }
+    return texto.length;
+  }
+
+  /** Pone el texto formateado en el campo y deja el cursor tras los mismos `n` caracteres que importan. */
+  function poner(c: HTMLInputElement, nuevo: string, n: number) {
+    valor = nuevo;
+    c.value = nuevo;
+    const pos = posicionTras(nuevo, n);
+    try { c.setSelectionRange(pos, pos); } catch { /* algunos tipos de campo no lo permiten */ }
+  }
+
   /** Inserta el operador donde está el cursor sin cerrar el teclado. */
   function operar(op: string) {
     const c = campo;
     if (!c) return;
     const ini = c.selectionStart ?? valor.length, fin = c.selectionEnd ?? valor.length;
-    const nuevo = formatearEscritura(valor.slice(0, ini) + op + valor.slice(fin));
-    valor = nuevo;
-    c.value = nuevo;
+    const antes = valor.slice(0, ini) + op;
     c.focus();
-    c.setSelectionRange(nuevo.length, nuevo.length);
+    poner(c, formatearEscritura(antes + valor.slice(fin)), contar(antes));
     alEscribir?.();
   }
 
@@ -52,8 +71,9 @@
   }
 
   function escribir(e: Event & { currentTarget: HTMLInputElement }) {
-    valor = formatearEscritura(e.currentTarget.value);
-    e.currentTarget.value = valor;
+    const c = e.currentTarget;
+    const n = contar(c.value.slice(0, c.selectionStart ?? c.value.length));
+    poner(c, formatearEscritura(c.value), n);
     alEscribir?.();
   }
 </script>

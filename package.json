@@ -1,6 +1,6 @@
 {
   "name": "cofre",
-  "version": "1.1.0",
+  "version": "1.1.1",
   "description": "Cofre — finanzas personales, todo local",
   "type": "module",
   "scripts": {
@@ -31,9 +31,9 @@
     "@tauri-apps/plugin-sql": "^2.5.0",
     "@tesseract.js-data/spa": "^1.0.0",
     "echarts": "^5.6.0",
-    "jsqr": "^1.4.0",
     "pdfjs-dist": "^6.4.299",
-    "tesseract.js": "^7.0.0"
+    "tesseract.js": "^7.0.0",
+    "zxing-wasm": "3.1.4"
   },
   "devDependencies": {
     "@sveltejs/adapter-static": "^3.0.10",

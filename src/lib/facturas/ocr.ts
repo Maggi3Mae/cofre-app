@@ -1,11 +1,22 @@
-// Lectura de fotos de facturas en el equipo: QR con jsQR y texto con tesseract.js (modelo de
-// español incluido en static/ocr, sin descargas). Nada sale a la red.
-import jsQR from "jsqr";
+// Lectura de fotos de facturas en el equipo: QR con ZXing (zxing-wasm, en static/zxing) y texto con
+// tesseract.js (modelo de español incluido en static/ocr, sin descargas). Nada sale a la red.
+import { prepareZXingModule, readBarcodes, type ReaderOptions } from "zxing-wasm/reader";
 import { createWorker, type Worker } from "tesseract.js";
 import { combinar, leerQrDian, leerTextoFactura, type DatosFactura } from "./leer";
 
-/** Lado mayor con que se trabaja la foto: más que lo que usa cualquier paso (QR ≤ 1.800, OCR 2.200). */
+/** Lado mayor con que se trabaja la foto (OCR 2.200, vista previa). */
 const LADO_MAX = 2400;
+/** Lado mayor de la foto original que se guarda para buscar el QR: el de la DIAN es denso (~80 módulos)
+ *  y en un tiquete largo achicado a 2.400 quedaba con < 2 px por módulo, ilegible. */
+const LADO_QR = 5000;
+type Fuente = HTMLCanvasElement | ImageBitmap;
+/** Foto original (sin girar, hasta LADO_QR) de cada foto de trabajo; el QR no depende del giro. */
+const originales = new WeakMap<HTMLCanvasElement, Fuente>();
+
+// El .wasm va empacado en la app (scripts/copiar-ocr.mjs); por defecto la librería lo bajaría de un CDN.
+prepareZXingModule({
+  overrides: { locateFile: (ruta: string, prefijo: string) => (ruta.endsWith(".wasm") ? `/zxing/${ruta}` : prefijo + ruta) },
+});
 
 /**
  * Carga la foto respetando la orientación de la cámara (EXIF) y ya achicada a LADO_MAX:
@@ -19,13 +30,20 @@ export async function cargarImagen(archivo: File): Promise<HTMLCanvasElement> {
     img.decoding = "async";
     img.src = url;
     await img.decode().catch(() => { throw new Error("No se pudo abrir la imagen. Prueba con JPG o PNG."); });
-    const f = Math.min(1, LADO_MAX / Math.max(img.naturalWidth, img.naturalHeight));
+    const { naturalWidth: nw, naturalHeight: nh } = img;
+    const f = Math.min(1, LADO_MAX / Math.max(nw, nh));
     const c = document.createElement("canvas");
-    c.width = Math.round(img.naturalWidth * f);
-    c.height = Math.round(img.naturalHeight * f);
-    const x = c.getContext("2d")!;
+    c.width = Math.round(nw * f);
+    c.height = Math.round(nh * f);
+    const x = c.getContext("2d", { willReadFrequently: true })!;
     x.imageSmoothingQuality = "high";
     x.drawImage(img, 0, 0, c.width, c.height);
+    if (f < 1) {
+      const g = Math.min(1, LADO_QR / Math.max(nw, nh));
+      const original = await createImageBitmap(img, { resizeWidth: Math.round(nw * g), resizeHeight: Math.round(nh * g), resizeQuality: "high" })
+        .catch(() => null);
+      if (original) originales.set(c, original);
+    }
     return c;
   } finally {
     URL.revokeObjectURL(url);
@@ -33,6 +51,13 @@ export async function cargarImagen(archivo: File): Promise<HTMLCanvasElement> {
 }
 
 export function rotar(origen: HTMLCanvasElement, grados: 90 | 180 | 270): HTMLCanvasElement {
+  const c = girar(origen, grados);
+  const original = originales.get(origen);
+  if (original) originales.set(c, original);
+  return c;
+}
+
+function girar(origen: HTMLCanvasElement, grados: 90 | 180 | 270): HTMLCanvasElement {
   const c = document.createElement("canvas");
   const lado = grados !== 180;
   c.width = lado ? origen.height : origen.width;
@@ -56,24 +81,83 @@ function escalar(origen: HTMLCanvasElement, maxLado: number, recorte?: [number, 
   return c;
 }
 
+/** Un trozo de la imagen (en sus coordenadas) escalado por `escala`, como píxeles. */
+function trozo(src: Fuente, [sx, sy, sw, sh]: number[], escala = 1): ImageData {
+  const c = document.createElement("canvas");
+  c.width = Math.max(1, Math.round(sw * escala));
+  c.height = Math.max(1, Math.round(sh * escala));
+  const x = c.getContext("2d", { willReadFrequently: true })!;
+  x.imageSmoothingQuality = "high";
+  x.drawImage(src, sx, sy, sw, sh, 0, 0, c.width, c.height);
+  return x.getImageData(0, 0, c.width, c.height);
+}
+
+const BASE: ReaderOptions = {
+  formats: ["QRCode"], tryHarder: true, tryRotate: true, tryInvert: true, tryDownscale: true, maxNumberOfSymbols: 4,
+};
+
+/** El primer QR que sea de la DIAN; si ninguno lo es, el primero que se leyó. */
+async function leerQr(img: ImageData, extra: ReaderOptions = {}): Promise<string | null> {
+  const r = (await readBarcodes(img, { ...BASE, ...extra })).filter((x) => x.isValid && x.text);
+  return (r.find((x) => leerQrDian(x.text)) ?? r[0])?.text ?? null;
+}
+
+/** Rectángulo del papel (la zona clara) en coordenadas de `src`, con un poco de margen. */
+function papel(src: Fuente): [number, number, number, number] {
+  const W = src.width, H = src.height, f0 = Math.min(1, 800 / Math.max(W, H));
+  const d = trozo(src, [0, 0, W, H], f0), { width: w, height: h } = d, p = d.data;
+  const luz = new Float32Array(w * h);
+  let max = 0;
+  for (let i = 0; i < w * h; i++) { luz[i] = 0.299 * p[i * 4] + 0.587 * p[i * 4 + 1] + 0.114 * p[i * 4 + 2]; if (luz[i] > max) max = luz[i]; }
+  const umbral = Math.max(110, max * 0.72);
+  const col = new Float32Array(w), fil = new Float32Array(h);
+  for (let y = 0; y < h; y++) for (let i = 0; i < w; i++) if (luz[y * w + i] > umbral) { col[i]++; fil[y]++; }
+  const rango = (v: Float32Array, total: number) => {
+    let a = 0, b = v.length - 1;
+    while (a < b && v[a] / total < 0.15) a++;
+    while (b > a && v[b] / total < 0.15) b--;
+    return b - a > v.length * 0.1 ? [a, b] : [0, v.length - 1];
+  };
+  const [x0, x1] = rango(col, h), [y0, y1] = rango(fil, w);
+  const k = W / w, margen = 0.03 * Math.max(x1 - x0, y1 - y0) * k;
+  const X0 = Math.max(0, x0 * k - margen), Y0 = Math.max(0, y0 * k - margen);
+  const X1 = Math.min(W, (x1 + 1) * k + margen), Y1 = Math.min(H, (y1 + 1) * k + margen);
+  return [X0, Y0, X1 - X0, Y1 - Y0].map(Math.round) as [number, number, number, number];
+}
+
 /**
- * Busca el QR: primero los tamaños y recortes más probables (en los tiquetes suele ir abajo;
- * en facturas, arriba) y con colores invertidos solo al final, que es lo más lento.
+ * Busca el QR (probado con tiquetes largos sintéticos: ver ESTADO.md):
+ *  1. la foto de trabajo entera (ZXing prueba varias escalas, giros e invertido): casi siempre basta;
+ *  2. la foto ORIGINAL: se ubica el papel y se recorre a lo largo con ventanas casi cuadradas, empezando
+ *     por las puntas (el QR suele ir al final del tiquete, que puede quedar arriba o abajo según la foto),
+ *     con el ancho del papel llevado a ~1.600 px: el QR queda con 4 px o más por módulo;
+ *  3. las dos puntas con otro binarizador y limpieza de ruido (papel térmico desteñido).
  */
-export function buscarQr(foto: HTMLCanvasElement): string | null {
-  const { width: w, height: h } = foto;
-  const intentos: [number, [number, number, number, number]?, boolean?][] = [
-    [1200],
-    [1400, [0, Math.round(h * 0.55), w, Math.round(h * 0.45)]],
-    [1400, [0, 0, w, Math.round(h * 0.4)]],
-    [1800, undefined, true],
-  ];
-  for (const [lado, recorte, invertir] of intentos) {
-    const c = escalar(foto, lado, recorte);
-    const d = c.getContext("2d", { willReadFrequently: true })!.getImageData(0, 0, c.width, c.height);
-    const r = jsQR(d.data, d.width, d.height, { inversionAttempts: invertir ? "attemptBoth" : "dontInvert" });
-    if (r?.data) return r.data;
+export async function buscarQr(foto: HTMLCanvasElement): Promise<string | null> {
+  let r = await leerQr(trozo(foto, [0, 0, foto.width, foto.height]));
+  if (r) return r;
+
+  const src = originales.get(foto) ?? foto;
+  const [px, py, pw, ph] = papel(src);
+  const vertical = ph >= pw, corto = Math.min(pw, ph), largo = Math.max(pw, ph);
+  const escala = Math.min(2, 1600 / corto);
+  const v = Math.min(largo, Math.round(corto * 1.3)), paso = Math.max(1, Math.round(corto * 0.55));
+  const inicios: number[] = [];
+  for (let a = 0; a <= largo - v; a += paso) inicios.push(a);
+  if (!inicios.length || inicios[inicios.length - 1] < largo - v) inicios.push(largo - v);
+  const orden: number[] = []; // puntas primero: final, inicio, penúltima, segunda…
+  while (inicios.length) { orden.push(inicios.pop()!); if (inicios.length) orden.push(inicios.shift()!); }
+  const ventana = (a: number) => (vertical ? [px, py + a, pw, v] : [px + a, py, v, ph]);
+
+  for (const a of orden) {
+    r = await leerQr(trozo(src, ventana(a), escala));
+    if (r) return r;
   }
+  for (const binarizer of ["GlobalHistogram", "FixedThreshold"] as const)
+    for (const a of orden.slice(0, 2)) {
+      r = await leerQr(trozo(src, ventana(a), escala), { binarizer, tryDenoise: true });
+      if (r) return r;
+    }
   return null;
 }
 
@@ -164,7 +248,7 @@ export async function cancelarLectura(): Promise<void> {
 export async function leerFactura(foto: HTMLCanvasElement, progreso?: (etapa: string, p?: number) => void, vigente: () => boolean = () => true): Promise<Lectura> {
   progreso?.("Buscando el código QR…");
   await new Promise((r) => setTimeout(r)); // deja pintar el estado
-  const qr = buscarQr(foto);
+  const qr = await buscarQr(foto).catch((e) => { console.warn("QR:", e); return null; });
   const deQr = qr ? leerQrDian(qr) : null;
 
   progreso?.("Preparando la foto…");

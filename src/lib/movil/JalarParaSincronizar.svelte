@@ -16,11 +16,15 @@
   let distancia = $state(0);
   let girando = $state(false);
 
+  /** Arriba del todo, mire quien mire el scroll (ventana, html o body). */
+  const estaArriba = () =>
+    window.scrollY <= 0 && document.documentElement.scrollTop <= 0 && document.body.scrollTop <= 0;
+
   /** Hay una hoja abierta (Panel bloquea el scroll de la página). */
   const hayHoja = () => document.documentElement.style.overflow === "hidden";
 
   function empieza(e: TouchEvent) {
-    if (girando || e.touches.length !== 1 || window.scrollY > 0 || hayHoja()) return;
+    if (girando || e.touches.length !== 1 || !estaArriba() || hayHoja()) return;
     inicio = { x: e.touches[0].clientX, y: e.touches[0].clientY };
   }
 
@@ -29,7 +33,7 @@
     const dx = e.touches[0].clientX - inicio.x, dy = e.touches[0].clientY - inicio.y;
     if (!jalando) {
       if (Math.abs(dx) > 10 && Math.abs(dx) > dy) { inicio = null; return; } // deslizar de lado (chips)
-      if (dy < HOLGURA || window.scrollY > 0) return;
+      if (dy < HOLGURA || !estaArriba()) return;
       if (Math.abs(dx) > dy * 0.6) { inicio = null; return; } // diagonal: no es jalar
       jalando = true;
     }

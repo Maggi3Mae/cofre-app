@@ -26,7 +26,9 @@ a.cf-btn { text-decoration: none; }
 /* Celular (pantalla.svelte.ts): sin menú lateral; barra inferior flotante y área segura.
    En columnas con scroll, los bloques no se aplastan (flex-shrink: 0). */
 /* Nada puede ser más ancho que la pantalla: si algo se sale, el WebView desplaza toda la página de lado. */
-html.celular, html.celular body { overflow-x: hidden; max-width: 100%; }
+/* «clip» y no «hidden»: con hidden (más height: 100%) el body se volvía el que hace scroll y window.scrollY
+   quedaba en 0 (jalar para sincronizar se activaba en mitad de la lista). Con clip se desplaza la ventana. */
+html.celular, html.celular body { overflow-x: clip; max-width: 100%; }
 html.celular, html.tablet { touch-action: manipulation; } /* sin zoom por doble toque; el scroll sigue igual */
 .app-movil {
   min-height: 100vh; box-sizing: border-box; width: 100%; overflow-x: clip;
